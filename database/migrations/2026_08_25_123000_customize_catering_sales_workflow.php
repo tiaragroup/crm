@@ -237,8 +237,8 @@ return new class extends Migration
             }
 
             DB::table($table)->where('id', $fromRecord->id)->update([
-                    'name'       => $to,
-                    'updated_at' => now(),
+                'name'       => $to,
+                'updated_at' => now(),
             ]);
         }
     }
