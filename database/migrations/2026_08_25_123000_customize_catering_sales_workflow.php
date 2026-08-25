@@ -18,12 +18,19 @@ return new class extends Migration
                 ->first();
 
             if ($pipeline) {
-                DB::table('lead_pipelines')
-                    ->where('id', $pipeline->id)
-                    ->update([
-                        'name'       => 'Catering Sales Pipeline',
-                        'updated_at' => $now,
-                    ]);
+                $pipelineNameInUse = DB::table('lead_pipelines')
+                    ->where('name', 'Catering Sales Pipeline')
+                    ->where('id', '!=', $pipeline->id)
+                    ->exists();
+
+                if (! $pipelineNameInUse) {
+                    DB::table('lead_pipelines')
+                        ->where('id', $pipeline->id)
+                        ->update([
+                            'name'       => 'Catering Sales Pipeline',
+                            'updated_at' => $now,
+                        ]);
+                }
 
                 $stages = [
                     'new'          => ['New Inquiry', 10, 1],
@@ -37,17 +44,7 @@ return new class extends Migration
                 ];
 
                 foreach ($stages as $code => [$name, $probability, $sortOrder]) {
-                    DB::table('lead_pipeline_stages')->updateOrInsert(
-                        [
-                            'lead_pipeline_id' => $pipeline->id,
-                            'code'             => $code,
-                        ],
-                        [
-                            'name'        => $name,
-                            'probability' => $probability,
-                            'sort_order'  => $sortOrder,
-                        ]
-                    );
+                    $this->upsertPipelineStage($pipeline->id, $code, $name, $probability, $sortOrder);
                 }
             }
 
@@ -56,7 +53,7 @@ return new class extends Migration
                 'Web Form' => 'Website Form',
                 'Phone'    => 'Phone Call',
                 'Direct'   => 'Walk-in / Direct',
-            ]);
+            ], 'lead_source_id');
 
             foreach (['WhatsApp', 'Instagram / Social Media', 'Referral', 'Event Planner / Agency'] as $source) {
                 if (! DB::table('lead_sources')->where('name', $source)->exists()) {
@@ -71,7 +68,7 @@ return new class extends Migration
             $this->renameDefaults('lead_types', [
                 'New Business'      => 'New Catering Client',
                 'Existing Business' => 'Returning Catering Client',
-            ]);
+            ], 'lead_type_id');
 
             $this->renameLeadAttributes($now);
             $this->addCateringAttributes($now);
@@ -147,12 +144,12 @@ return new class extends Migration
                 'Website Form'     => 'Web Form',
                 'Phone Call'       => 'Phone',
                 'Walk-in / Direct' => 'Direct',
-            ]);
+            ], 'lead_source_id');
 
             $this->renameDefaults('lead_types', [
                 'New Catering Client'       => 'New Business',
                 'Returning Catering Client' => 'Existing Business',
-            ]);
+            ], 'lead_type_id');
 
             DB::table('attributes')
                 ->where('entity_type', 'leads')
@@ -174,15 +171,75 @@ return new class extends Migration
         });
     }
 
-    private function renameDefaults(string $table, array $names): void
+    /**
+     * Update an existing stage by code or name, merging duplicates without
+     * losing leads when production data uses a different legacy code.
+     */
+    private function upsertPipelineStage(int $pipelineId, string $code, string $name, int $probability, int $sortOrder): void
+    {
+        $query = DB::table('lead_pipeline_stages')->where('lead_pipeline_id', $pipelineId);
+        $stageByCode = (clone $query)->where('code', $code)->first();
+        $stageByName = (clone $query)->where('name', $name)->first();
+
+        if ($stageByCode && $stageByName && $stageByCode->id !== $stageByName->id) {
+            DB::table('leads')
+                ->where('lead_pipeline_stage_id', $stageByName->id)
+                ->update(['lead_pipeline_stage_id' => $stageByCode->id]);
+
+            DB::table('lead_pipeline_stages')->where('id', $stageByName->id)->delete();
+        }
+
+        $stageId = $stageByCode->id ?? $stageByName->id ?? null;
+        $values = [
+            'code'        => $code,
+            'name'        => $name,
+            'probability' => $probability,
+            'sort_order'  => $sortOrder,
+        ];
+
+        if ($stageId) {
+            DB::table('lead_pipeline_stages')->where('id', $stageId)->update($values);
+
+            return;
+        }
+
+        DB::table('lead_pipeline_stages')->insert(array_merge($values, [
+            'lead_pipeline_id' => $pipelineId,
+        ]));
+    }
+
+    /**
+     * Rename stock source/type records. If production already contains the
+     * target name, reuse it and move lead references before removing the old
+     * duplicate.
+     */
+    private function renameDefaults(string $table, array $names, ?string $leadForeignKey = null): void
     {
         foreach ($names as $from => $to) {
-            DB::table($table)
-                ->where('name', $from)
-                ->update([
+            $fromRecord = DB::table($table)->where('name', $from)->first();
+
+            if (! $fromRecord) {
+                continue;
+            }
+
+            $toRecord = DB::table($table)->where('name', $to)->first();
+
+            if ($toRecord && $toRecord->id !== $fromRecord->id) {
+                if ($leadForeignKey) {
+                    DB::table('leads')
+                        ->where($leadForeignKey, $fromRecord->id)
+                        ->update([$leadForeignKey => $toRecord->id]);
+                }
+
+                DB::table($table)->where('id', $fromRecord->id)->delete();
+
+                continue;
+            }
+
+            DB::table($table)->where('id', $fromRecord->id)->update([
                     'name'       => $to,
                     'updated_at' => now(),
-                ]);
+            ]);
         }
     }
 
