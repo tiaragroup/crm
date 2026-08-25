@@ -134,9 +134,9 @@ class QuoteController extends Controller
                     ->filter(fn ($item) => $item->product)
                     ->map(fn ($item) => [
                         'product' => [
-                            'id'          => $item->product->id,
-                            'name'        => $item->product->getRawOriginal('name') ?: $item->product->name,
-                            'description' => $item->product->getRawOriginal('description') ?: $item->product->description,
+                            'id'                     => $item->product->id,
+                            'name'                   => $item->product->getRawOriginal('name') ?: $item->product->name,
+                            'description'            => $item->product->getRawOriginal('description') ?: $item->product->description,
                             'catering_menu_category' => $item->product->cateringMenuCategory ? [
                                 'id'   => $item->product->cateringMenuCategory->id,
                                 'name' => $item->product->cateringMenuCategory->name,
@@ -170,7 +170,7 @@ class QuoteController extends Controller
             'proposalSettings' => ProposalSetting::query()->first(),
             'cateringPackages' => $cateringPackages,
             'menuCategories'   => $menuCategories,
-            'people' => Person::query()
+            'people'           => Person::query()
                 ->with('organization:id,name')
                 ->orderBy('name')
                 ->get(['id', 'name', 'emails', 'contact_numbers', 'organization_id'])
