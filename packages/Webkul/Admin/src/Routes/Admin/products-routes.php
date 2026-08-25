@@ -1,11 +1,21 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Webkul\Admin\Http\Controllers\Products\CateringMenuController;
 use Webkul\Admin\Http\Controllers\Products\ActivityController;
 use Webkul\Admin\Http\Controllers\Products\ProductController;
 use Webkul\Admin\Http\Controllers\Products\TagController;
 
 Route::group(['middleware' => ['user']], function () {
+    Route::controller(CateringMenuController::class)->prefix('catering-menus')->group(function () {
+        Route::get('', 'index')->name('admin.catering.menus.index');
+        Route::get('create', 'create')->name('admin.catering.menus.create');
+        Route::post('', 'store')->name('admin.catering.menus.store');
+        Route::get('{menu}/edit', 'edit')->name('admin.catering.menus.edit');
+        Route::put('{menu}', 'update')->name('admin.catering.menus.update');
+        Route::delete('{menu}', 'destroy')->name('admin.catering.menus.delete');
+    });
+
     Route::controller(ProductController::class)->prefix('products')->group(function () {
         Route::get('', 'index')->name('admin.products.index');
 

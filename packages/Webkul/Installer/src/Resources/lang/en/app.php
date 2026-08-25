@@ -4,15 +4,21 @@ return [
     'seeders' => [
         'attributes' => [
             'leads' => [
-                'description'         => 'Description',
-                'expected-close-date' => 'Expected Close Date',
-                'lead-value'          => 'Lead Value',
-                'sales-owner'         => 'Sales Owner',
+                'description'         => 'Requirements & Notes',
+                'expected-close-date' => 'Decision Deadline',
+                'lead-value'          => 'Estimated Contract Value',
+                'sales-owner'         => 'Sales Representative',
                 'source'              => 'Source',
-                'title'               => 'Title',
+                'title'               => 'Event / Inquiry Name',
                 'type'                => 'Type',
                 'pipeline'            => 'Pipeline',
                 'stage'               => 'Stage',
+                'event-date'          => 'Event Date',
+                'guest-count'         => 'Estimated Guest Count',
+                'venue-location'      => 'Venue / Event Location',
+                'event-type'          => 'Event Type',
+                'service-style'       => 'Service Style',
+                'dietary-requirements'=> 'Dietary Requirements / Allergies',
             ],
 
             'persons' => [
@@ -77,29 +83,35 @@ return [
 
         'lead' => [
             'pipeline' => [
-                'default' => 'Default Pipeline',
+                'default' => 'Catering Sales Pipeline',
 
                 'pipeline-stages' => [
-                    'follow-up'   => 'Follow Up',
-                    'lost'        => 'Lost',
-                    'negotiation' => 'Negotiation',
-                    'new'         => 'New',
-                    'prospect'    => 'Prospect',
-                    'won'         => 'Won',
+                    'follow-up'    => 'Contacted',
+                    'lost'         => 'Lost',
+                    'negotiation'  => 'Negotiation',
+                    'new'          => 'New Inquiry',
+                    'proposal-sent'=> 'Proposal Sent',
+                    'prospect'     => 'Qualified',
+                    'site-visit'   => 'Site Visit Scheduled',
+                    'won'          => 'Confirmed / Won',
                 ],
             ],
 
             'source' => [
-                'direct'   => 'Direct',
-                'email'    => 'Email',
-                'phone'    => 'Phone',
-                'web'      => 'Web',
-                'web-form' => 'Web Form',
+                'agency'       => 'Event Planner / Agency',
+                'direct'       => 'Walk-in / Direct',
+                'email'        => 'Email',
+                'phone'        => 'Phone Call',
+                'referral'     => 'Referral',
+                'social-media' => 'Instagram / Social Media',
+                'web'          => 'Website',
+                'web-form'     => 'Website Form',
+                'whatsapp'     => 'WhatsApp',
             ],
 
             'type' => [
-                'existing-business' => 'Existing Business',
-                'new-business'      => 'New Business',
+                'existing-business' => 'Returning Catering Client',
+                'new-business'      => 'New Catering Client',
             ],
         ],
 

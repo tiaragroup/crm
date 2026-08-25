@@ -17,7 +17,12 @@ class QuoteItem extends Model implements QuoteItemContract
     protected $fillable = [
         'sku',
         'name',
+        'description',
+        'pricing_type',
         'quantity',
+        'guest_count',
+        'is_included',
+        'sort_order',
         'price',
         'coupon_code',
         'discount_percent',
@@ -27,6 +32,10 @@ class QuoteItem extends Model implements QuoteItemContract
         'total',
         'product_id',
         'quote_id',
+    ];
+
+    protected $casts = [
+        'is_included' => 'boolean',
     ];
 
     /**

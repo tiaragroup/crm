@@ -48,6 +48,26 @@ class SourceSeeder extends Seeder
                 'name'       => trans('installer::app.seeders.lead.source.direct', [], $defaultLocale),
                 'created_at' => $now,
                 'updated_at' => $now,
+            ], [
+                'id'         => 6,
+                'name'       => trans('installer::app.seeders.lead.source.whatsapp', [], $defaultLocale),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'id'         => 7,
+                'name'       => trans('installer::app.seeders.lead.source.social-media', [], $defaultLocale),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'id'         => 8,
+                'name'       => trans('installer::app.seeders.lead.source.referral', [], $defaultLocale),
+                'created_at' => $now,
+                'updated_at' => $now,
+            ], [
+                'id'         => 9,
+                'name'       => trans('installer::app.seeders.lead.source.agency', [], $defaultLocale),
+                'created_at' => $now,
+                'updated_at' => $now,
             ],
         ]);
     }

@@ -49,7 +49,7 @@ return [
     ], [
         'key'   => 'quotes.print',
         'name'  => 'admin::app.acl.print',
-        'route' => 'admin.quotes.print',
+        'route' => ['admin.quotes.print', 'admin.quotes.word'],
         'sort'  => 3,
     ], [
         'key'   => 'quotes.delete',
@@ -200,6 +200,26 @@ return [
         'key'   => 'products.view',
         'name'  => 'admin::app.acl.view',
         'route' => 'admin.products.view',
+        'sort'  => 3,
+    ], [
+        'key'   => 'catering_menus',
+        'name'  => 'admin::app.acl.catering-menus',
+        'route' => 'admin.catering.menus.index',
+        'sort'  => 7.5,
+    ], [
+        'key'   => 'catering_menus.create',
+        'name'  => 'admin::app.acl.create',
+        'route' => ['admin.catering.menus.create', 'admin.catering.menus.store'],
+        'sort'  => 1,
+    ], [
+        'key'   => 'catering_menus.edit',
+        'name'  => 'admin::app.acl.edit',
+        'route' => ['admin.catering.menus.edit', 'admin.catering.menus.update'],
+        'sort'  => 2,
+    ], [
+        'key'   => 'catering_menus.delete',
+        'name'  => 'admin::app.acl.delete',
+        'route' => 'admin.catering.menus.delete',
         'sort'  => 3,
     ], [
         'key'   => 'settings',

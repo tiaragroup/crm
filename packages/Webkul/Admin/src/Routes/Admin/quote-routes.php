@@ -16,6 +16,8 @@ Route::controller(QuoteController::class)->prefix('quotes')->group(function () {
 
     Route::get('print/{id?}', 'print')->name('admin.quotes.print');
 
+    Route::get('word/{id}', 'word')->name('admin.quotes.word');
+
     Route::delete('{id}', 'destroy')->name('admin.quotes.delete');
 
     Route::get('search', 'search')->name('admin.quotes.search');

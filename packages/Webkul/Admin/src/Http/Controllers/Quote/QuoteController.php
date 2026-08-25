@@ -9,15 +9,23 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\View;
 use Prettus\Repository\Criteria\RequestCriteria;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Webkul\Admin\DataGrids\Quote\QuoteDataGrid;
 use Webkul\Admin\Http\Controllers\Controller;
-use Webkul\Admin\Http\Requests\AttributeForm;
 use Webkul\Admin\Http\Requests\MassDestroyRequest;
+use Webkul\Admin\Http\Requests\ProposalForm;
 use Webkul\Admin\Http\Resources\QuoteResource;
+use Webkul\Contact\Models\Person;
 use Webkul\Core\Traits\PDFHandler;
 use Webkul\Lead\Repositories\LeadRepository;
+use Webkul\Product\Models\CateringMenuCategory;
+use Webkul\Product\Models\CateringPackage;
+use Webkul\Quote\Models\ProposalSetting;
 use Webkul\Quote\Repositories\QuoteRepository;
+use Webkul\Quote\Services\ProposalSnapshot;
+use Webkul\Quote\Services\ProposalWordExporter;
+use Webkul\User\Models\User;
 
 class QuoteController extends Controller
 {
@@ -54,13 +62,16 @@ class QuoteController extends Controller
     {
         $lead = $this->leadRepository->find(request('id'));
 
-        return view('admin::quotes.create', compact('lead'));
+        return view('admin::quotes.create', array_merge(
+            compact('lead'),
+            $this->proposalFormData()
+        ));
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(AttributeForm $request): RedirectResponse
+    public function store(ProposalForm $request): RedirectResponse
     {
         Event::dispatch('quote.create.before');
 
@@ -88,15 +99,97 @@ class QuoteController extends Controller
      */
     public function edit(int $id): View
     {
-        $quote = $this->quoteRepository->findOrFail($id);
+        $quote = $this->quoteRepository->with([
+            'items',
+            'menuSections.items',
+            'person',
+            'user',
+        ])->findOrFail($id);
 
-        return view('admin::quotes.edit', compact('quote'));
+        return view('admin::quotes.edit', array_merge(
+            compact('quote'),
+            $this->proposalFormData()
+        ));
+    }
+
+    /**
+     * Shared data for the catering proposal builder.
+     */
+    protected function proposalFormData(): array
+    {
+        $cateringPackages = CateringPackage::query()
+            ->with(['items.product.cateringMenuCategory'])
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get()
+            ->map(fn (CateringPackage $package) => [
+                'id'                 => $package->id,
+                'name'               => $package->name,
+                'description'        => $package->description,
+                'setup_description'  => $package->setup_description,
+                'service_inclusions' => $package->service_inclusions,
+                'price_per_person'   => (float) $package->price_per_person,
+                'minimum_guests'     => $package->minimum_guests,
+                'items'              => $package->items
+                    ->filter(fn ($item) => $item->product)
+                    ->map(fn ($item) => [
+                        'product' => [
+                            'id'          => $item->product->id,
+                            'name'        => $item->product->getRawOriginal('name') ?: $item->product->name,
+                            'description' => $item->product->getRawOriginal('description') ?: $item->product->description,
+                            'catering_menu_category' => $item->product->cateringMenuCategory ? [
+                                'id'   => $item->product->cateringMenuCategory->id,
+                                'name' => $item->product->cateringMenuCategory->name,
+                            ] : null,
+                        ],
+                    ])
+                    ->values(),
+            ])
+            ->values();
+
+        $menuCategories = CateringMenuCategory::query()
+            ->with(['products' => fn ($query) => $query
+                ->where('is_active', true)
+                ->orderBy('sort_order')
+                ->orderBy('name')])
+            ->where('is_active', true)
+            ->orderBy('sort_order')
+            ->get()
+            ->map(fn (CateringMenuCategory $category) => [
+                'id'       => $category->id,
+                'name'     => $category->name,
+                'products' => $category->products->map(fn ($product) => [
+                    'id'          => $product->id,
+                    'name'        => $product->getRawOriginal('name') ?: $product->name,
+                    'description' => $product->getRawOriginal('description') ?: $product->description,
+                ])->values(),
+            ])
+            ->values();
+
+        return [
+            'proposalSettings' => ProposalSetting::query()->first(),
+            'cateringPackages' => $cateringPackages,
+            'menuCategories'   => $menuCategories,
+            'people' => Person::query()
+                ->with('organization:id,name')
+                ->orderBy('name')
+                ->get(['id', 'name', 'emails', 'contact_numbers', 'organization_id'])
+                ->map(fn (Person $person) => [
+                    'id'      => $person->id,
+                    'name'    => $person->name,
+                    'company' => $person->organization?->name,
+                    'email'   => data_get($person->emails, '0.value'),
+                    'mobile'  => data_get($person->contact_numbers, '0.value'),
+                ])
+                ->values(),
+            'users'  => User::query()->where('status', true)->orderBy('name')->get(['id', 'name']),
+        ];
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(AttributeForm $request, int $id): RedirectResponse
+    public function update(ProposalForm $request, int $id): RedirectResponse
     {
         Event::dispatch('quote.update.before', $id);
 
@@ -188,11 +281,28 @@ class QuoteController extends Controller
      */
     public function print($id): Response|StreamedResponse
     {
-        $quote = $this->quoteRepository->findOrFail($id);
+        $quote = $this->quoteRepository->with(['items', 'menuSections.items', 'person.organization', 'user'])->findOrFail($id);
+        $snapshot = $quote->document_snapshot ?: app(ProposalSnapshot::class)->build($quote);
+        $snapshot['sales_contact'] = [
+            'name'  => $quote->user?->name,
+            'email' => $quote->user?->email,
+            'phone' => $quote->user?->phone,
+        ];
 
         return $this->downloadPDF(
-            view('admin::quotes.pdf', compact('quote'))->render(),
-            'Quote_'.$quote->subject.'_'.$quote->created_at->format('d-m-Y')
+            view('admin::quotes.proposal-pdf', compact('snapshot'))->render(),
+            'Proposal_'.$quote->proposal_reference,
+            'letter'
         );
+    }
+
+    /**
+     * Download an editable Word version of the proposal.
+     */
+    public function word(int $id, ProposalWordExporter $exporter): BinaryFileResponse
+    {
+        $quote = $this->quoteRepository->with(['items', 'menuSections.items', 'person.organization', 'user'])->findOrFail($id);
+
+        return $exporter->download($quote);
     }
 }

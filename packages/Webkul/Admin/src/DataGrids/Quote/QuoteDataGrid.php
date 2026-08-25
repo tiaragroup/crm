@@ -4,7 +4,9 @@ namespace Webkul\Admin\DataGrids\Quote;
 
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
+use Webkul\Contact\Repositories\PersonRepository;
 use Webkul\DataGrid\DataGrid;
+use Webkul\User\Repositories\UserRepository;
 
 class QuoteDataGrid extends DataGrid
 {
@@ -18,7 +20,11 @@ class QuoteDataGrid extends DataGrid
         $queryBuilder = DB::table('quotes')
             ->addSelect(
                 'quotes.id',
+                'quotes.proposal_reference',
+                'quotes.status',
                 'quotes.subject',
+                'quotes.event_at',
+                'quotes.guest_count',
                 'quotes.expired_at',
                 'quotes.sub_total',
                 'quotes.discount_amount',
@@ -40,6 +46,10 @@ class QuoteDataGrid extends DataGrid
         }
 
         $this->addFilter('id', 'quotes.id');
+        $this->addFilter('proposal_reference', 'quotes.proposal_reference');
+        $this->addFilter('status', 'quotes.status');
+        $this->addFilter('event_at', 'quotes.event_at');
+        $this->addFilter('guest_count', 'quotes.guest_count');
         $this->addFilter('user', 'quotes.user_id');
         $this->addFilter('sales_person', 'users.name');
         $this->addFilter('person_name', 'persons.name');
@@ -61,11 +71,45 @@ class QuoteDataGrid extends DataGrid
     public function prepareColumns(): void
     {
         $this->addColumn([
+            'index'      => 'proposal_reference',
+            'label'      => 'Proposal Ref.',
+            'type'       => 'string',
+            'filterable' => true,
+            'sortable'   => true,
+        ]);
+
+        $this->addColumn([
             'index'      => 'subject',
             'label'      => trans('admin::app.quotes.index.datagrid.subject'),
             'type'       => 'string',
             'filterable' => true,
             'sortable'   => true,
+        ]);
+
+        $this->addColumn([
+            'index'      => 'event_at',
+            'label'      => 'Event Date',
+            'type'       => 'date',
+            'sortable'   => true,
+            'filterable' => true,
+            'closure'    => fn ($row) => $row->event_at ? core()->formatDate($row->event_at, 'd M Y') : '—',
+        ]);
+
+        $this->addColumn([
+            'index'      => 'guest_count',
+            'label'      => 'Guests',
+            'type'       => 'integer',
+            'sortable'   => true,
+            'filterable' => true,
+        ]);
+
+        $this->addColumn([
+            'index'      => 'status',
+            'label'      => 'Status',
+            'type'       => 'string',
+            'sortable'   => true,
+            'filterable' => true,
+            'closure'    => fn ($row) => ucfirst($row->status),
         ]);
 
         $this->addColumn([
@@ -76,7 +120,7 @@ class QuoteDataGrid extends DataGrid
             'filterable'         => true,
             'filterable_type'    => 'searchable_dropdown',
             'filterable_options' => [
-                'repository' => \Webkul\User\Repositories\UserRepository::class,
+                'repository' => UserRepository::class,
                 'column'     => [
                     'label' => 'name',
                     'value' => 'name',
@@ -92,7 +136,7 @@ class QuoteDataGrid extends DataGrid
             'filterable'         => true,
             'filterable_type'    => 'searchable_dropdown',
             'filterable_options' => [
-                'repository' => \Webkul\Contact\Repositories\PersonRepository::class,
+                'repository' => PersonRepository::class,
                 'column'     => [
                     'label' => 'name',
                     'value' => 'name',
@@ -194,6 +238,14 @@ class QuoteDataGrid extends DataGrid
                 'method' => 'GET',
                 'url'    => fn ($row) => route('admin.quotes.print', $row->id),
             ]);
+
+            $this->addAction([
+                'index'  => 'word',
+                'icon'   => 'icon-download',
+                'title'  => 'Download Word',
+                'method' => 'GET',
+                'url'    => fn ($row) => route('admin.quotes.word', $row->id),
+            ]);
         }
 
         if (bouncer()->hasPermission('quotes.delete')) {
@@ -219,11 +271,5 @@ class QuoteDataGrid extends DataGrid
             'url'    => route('admin.quotes.mass_delete'),
         ]);
 
-        $this->addMassAction([
-            'icon'   => 'icon-delete',
-            'title'  => trans('admin::app.quotes.index.datagrid.delete'),
-            'method' => 'POST',
-            'url'    => route('admin.quotes.mass_delete'),
-        ]);
     }
 }

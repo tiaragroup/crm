@@ -5,6 +5,7 @@ namespace Webkul\Quote\Repositories;
 use Illuminate\Container\Container;
 use Webkul\Core\Eloquent\Repository;
 use Webkul\Product\Repositories\ProductRepository;
+use Webkul\Quote\Contracts\QuoteItem;
 
 class QuoteItemRepository extends Repository
 {
@@ -35,15 +36,13 @@ class QuoteItemRepository extends Repository
      */
     public function create(array $data)
     {
-        if (empty($data['product_id'])) {
-            return null;
-        }
-
-        $product = $this->productRepository->findOrFail($data['product_id']);
+        $product = ! empty($data['product_id'])
+            ? $this->productRepository->findOrFail($data['product_id'])
+            : null;
 
         $quoteItem = parent::create(array_merge($data, [
-            'sku'  => $product->sku,
-            'name' => $product->name,
+            'sku'  => $product?->sku ?? ($data['sku'] ?? null),
+            'name' => $product?->name ?? ($data['name'] ?? null),
         ]));
 
         return $quoteItem;
@@ -52,15 +51,17 @@ class QuoteItemRepository extends Repository
     /**
      * @param  int  $id
      * @param  string  $attribute
-     * @return \Webkul\Quote\Contracts\QuoteItem
+     * @return QuoteItem
      */
     public function update(array $data, $id, $attribute = 'id')
     {
-        $product = $this->productRepository->findOrFail($data['product_id']);
+        $product = ! empty($data['product_id'])
+            ? $this->productRepository->findOrFail($data['product_id'])
+            : null;
 
         $quoteItem = parent::update(array_merge($data, [
-            'sku'  => $product->sku,
-            'name' => $product->name,
+            'sku'  => $product?->sku ?? ($data['sku'] ?? null),
+            'name' => $product?->name ?? ($data['name'] ?? null),
         ]), $id);
 
         return $quoteItem;

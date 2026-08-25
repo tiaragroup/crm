@@ -4,6 +4,7 @@ namespace Webkul\Admin\Http\Controllers\Products;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\View;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -12,6 +13,7 @@ use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\AttributeForm;
 use Webkul\Admin\Http\Requests\MassDestroyRequest;
 use Webkul\Admin\Http\Resources\ProductResource;
+use Webkul\Product\Models\CateringMenuCategory;
 use Webkul\Product\Repositories\ProductRepository;
 
 class ProductController extends Controller
@@ -43,16 +45,20 @@ class ProductController extends Controller
      */
     public function create(): View
     {
-        return view('admin::products.create');
+        $cateringMenuCategories = CateringMenuCategory::query()->orderBy('sort_order')->get();
+
+        return view('admin::products.create', compact('cateringMenuCategories'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @return Response
      */
     public function store(AttributeForm $request)
     {
+        $this->validateCateringFields($request);
+
         Event::dispatch('product.create.before');
 
         $product = $this->productRepository->create($request->all());
@@ -95,7 +101,9 @@ class ProductController extends Controller
                 ];
             });
 
-        return view('admin::products.edit', compact('product', 'inventories'));
+        $cateringMenuCategories = CateringMenuCategory::query()->orderBy('sort_order')->get();
+
+        return view('admin::products.edit', compact('product', 'inventories', 'cateringMenuCategories'));
     }
 
     /**
@@ -103,6 +111,8 @@ class ProductController extends Controller
      */
     public function update(AttributeForm $request, int $id)
     {
+        $this->validateCateringFields($request);
+
         Event::dispatch('product.update.before', $id);
 
         $product = $this->productRepository->update($request->all(), $id);
@@ -211,6 +221,20 @@ class ProductController extends Controller
 
         return new JsonResponse([
             'message' => trans('admin::app.products.index.delete-success'),
+        ]);
+    }
+
+    /**
+     * Validate catering-specific catalog fields.
+     */
+    protected function validateCateringFields(AttributeForm $request): void
+    {
+        $request->validate([
+            'catering_menu_category_id'  => ['nullable', 'integer', 'exists:catering_menu_categories,id'],
+            'unit_type'                  => ['required', 'in:menu_item,per_person,fixed,included'],
+            'allergens'                  => ['nullable', 'string'],
+            'sort_order'                 => ['nullable', 'integer', 'min:0'],
+            'is_active'                  => ['required', 'boolean'],
         ]);
     }
 }

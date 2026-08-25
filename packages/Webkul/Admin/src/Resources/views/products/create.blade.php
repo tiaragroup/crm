@@ -62,6 +62,8 @@
                             ])"
                         />
 
+                        @include('admin::products.catering-fields', ['product' => null])
+
                         {!! view_render_event('admin.products.create.attributes.after') !!}
                     </div>
                 </div>

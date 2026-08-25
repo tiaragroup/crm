@@ -61,6 +61,8 @@
                             :entity="$product"
                         />
 
+                        @include('admin::products.catering-fields', ['product' => $product])
+
                         {!! view_render_event('admin.products.edit.attributes.after', ['product' => $product]) !!}
                     </div>
                 </div>

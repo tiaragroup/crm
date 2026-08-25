@@ -26,9 +26,23 @@ class Product extends Model implements ProductContract
         'name',
         'sku',
         'description',
+        'catering_menu_category_id',
+        'unit_type',
+        'allergens',
+        'sort_order',
+        'is_active',
         'quantity',
         'price',
     ];
+
+    protected $casts = [
+        'is_active' => 'boolean',
+    ];
+
+    public function cateringMenuCategory()
+    {
+        return $this->belongsTo(CateringMenuCategory::class, 'catering_menu_category_id');
+    }
 
     /**
      * Get the product warehouses that owns the product.

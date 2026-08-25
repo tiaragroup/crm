@@ -19,6 +19,9 @@ class Quote extends Model implements QuoteContract
         'billing_address'  => 'array',
         'shipping_address' => 'array',
         'expired_at'       => 'datetime',
+        'issued_at'        => 'date',
+        'event_at'         => 'datetime',
+        'document_snapshot'=> 'array',
     ];
 
     /**
@@ -29,6 +32,34 @@ class Quote extends Model implements QuoteContract
     protected $fillable = [
         'subject',
         'description',
+        'proposal_reference',
+        'status',
+        'revision',
+        'issued_at',
+        'client_company',
+        'attention_name',
+        'client_mobile',
+        'client_email',
+        'greeting',
+        'event_type',
+        'event_at',
+        'venue',
+        'setup_description',
+        'guest_count',
+        'service_inclusions',
+        'vat_percent',
+        'pricing_terms',
+        'payment_terms',
+        'changes_terms',
+        'cancellation_terms',
+        'bank_account_name',
+        'bank_name',
+        'iban',
+        'company_signatory_name',
+        'company_signatory_title',
+        'client_signatory_name',
+        'client_signatory_title',
+        'document_snapshot',
         'billing_address',
         'shipping_address',
         'discount_percent',
@@ -47,7 +78,12 @@ class Quote extends Model implements QuoteContract
      */
     public function items()
     {
-        return $this->hasMany(QuoteItemProxy::modelClass());
+        return $this->hasMany(QuoteItemProxy::modelClass())->orderBy('sort_order');
+    }
+
+    public function menuSections()
+    {
+        return $this->hasMany(QuoteMenuSection::class)->orderBy('sort_order');
     }
 
     /**

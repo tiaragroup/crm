@@ -131,6 +131,12 @@ return [
         'route'      => 'admin.products.index',
         'sort'       => 7,
         'icon-class' => 'icon-product',
+    ], [
+        'key'        => 'catering_menus',
+        'name'       => 'admin::app.layouts.catering-menus',
+        'route'      => 'admin.catering.menus.index',
+        'sort'       => 7.5,
+        'icon-class' => 'icon-product',
     ],
 
     /**

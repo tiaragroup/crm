@@ -2,9 +2,9 @@
 
 return [
     'acl' => [
-        'leads'           => 'Leads',
-        'lead'            => 'Lead',
-        'quotes'          => 'Quotes',
+        'leads'           => 'Catering Inquiries',
+        'lead'            => 'Catering Inquiry',
+        'quotes'          => 'Catering Proposals',
         'mail'            => 'Mail',
         'inbox'           => 'Inbox',
         'draft'           => 'Draft',
@@ -17,6 +17,7 @@ return [
         'persons'         => 'Persons',
         'organizations'   => 'Organizations',
         'products'        => 'Products',
+        'catering-menus'  => 'Catering Menus',
         'settings'        => 'Settings',
         'groups'          => 'Groups',
         'roles'           => 'Roles',
@@ -429,12 +430,12 @@ return [
 
     'quotes' => [
         'index' => [
-            'title'          => 'Quotes',
-            'create-btn'     => 'Create Quote',
-            'create-success' => 'Quote created successfully.',
-            'update-success' => 'Quote updated successfully.',
-            'delete-success' => 'Quote deleted successfully.',
-            'delete-failed'  => 'Quote can not be deleted.',
+            'title'          => 'Catering Proposals',
+            'create-btn'     => 'Create Proposal',
+            'create-success' => 'Catering proposal created successfully.',
+            'update-success' => 'Catering proposal updated successfully.',
+            'delete-success' => 'Catering proposal deleted successfully.',
+            'delete-failed'  => 'Catering proposal can not be deleted.',
 
             'datagrid' => [
                 'subject'        => 'Subject',
@@ -476,9 +477,9 @@ return [
         ],
 
         'create' => [
-            'title'             => 'Create Quote',
-            'save-btn'          => 'Save Quote',
-            'quote-info'        => 'Quote Information',
+            'title'             => 'Create Catering Proposal',
+            'save-btn'          => 'Save Proposal',
+            'quote-info'        => 'Proposal Information',
             'quote-info-info'   => 'Put the basic information of the quote.',
             'address-info'      => 'Address Information',
             'address-info-info' => 'Information about the address related to quote.',
@@ -507,9 +508,9 @@ return [
         ],
 
         'edit' => [
-            'title'             => 'Edit Quote',
-            'save-btn'          => 'Save Quote',
-            'quote-info'        => 'Quote Information',
+            'title'             => 'Edit Catering Proposal',
+            'save-btn'          => 'Save Proposal',
+            'quote-info'        => 'Proposal Information',
             'quote-info-info'   => 'Put the basic information of the quote.',
             'address-info'      => 'Address Information',
             'address-info-info' => 'Information about the address related to quote.',
@@ -1898,11 +1899,11 @@ return [
     ],
 
     'leads' => [
-        'create-success'    => 'Lead created successfully.',
-        'update-success'    => 'Leads updated successfully.',
-        'update-failed'     => 'Leads can not be deleted.',
-        'destroy-success'   => 'Lead deleted successfully.',
-        'destroy-failed'    => 'Lead can not be deleted.',
+        'create-success'    => 'Catering inquiry created successfully.',
+        'update-success'    => 'Catering inquiries updated successfully.',
+        'update-failed'     => 'Catering inquiries can not be deleted.',
+        'destroy-success'   => 'Catering inquiry deleted successfully.',
+        'destroy-failed'    => 'Catering inquiry can not be deleted.',
 
         'file' => [
             'data-not-found'         => 'Data not found.',
@@ -1919,20 +1920,20 @@ return [
         ],
 
         'index' => [
-            'title'      => 'Leads',
-            'create-btn' => 'Create Lead',
+            'title'      => 'Catering Inquiries',
+            'create-btn' => 'Create Inquiry',
 
             'datagrid' => [
                 'id'                  => 'ID',
                 'sales-person'        => 'Sales Person',
                 'subject'             => 'Subject',
                 'source'              => 'Source',
-                'lead-value'          => 'Lead Value',
-                'lead-type'           => 'Lead Type',
+                'lead-value'          => 'Estimated Contract Value',
+                'lead-type'           => 'Client Type',
                 'tag-name'            => 'Tag Name',
                 'contact-person'      => 'Contact Person',
                 'stage'               => 'Stage',
-                'rotten-lead'         => 'Rotten Lead',
+                'rotten-lead'         => 'Overdue Inquiry',
                 'date-to'             => 'Date To',
                 'created-at'          => 'Created At',
                 'no'                  => 'No',
@@ -1943,27 +1944,27 @@ return [
             ],
 
             'kanban' => [
-                'rotten-days'            => 'Lead is rotten for :days days',
-                'empty-list'             => 'Your Leads List is Empty',
-                'empty-list-description' => 'Create a lead to organize your goals.',
-                'create-lead-btn'        => 'Create Lead',
+                'rotten-days'            => 'Inquiry is overdue by :days days',
+                'empty-list'             => 'Your Catering Inquiry List is Empty',
+                'empty-list-description' => 'Create an inquiry to begin the catering sales process.',
+                'create-lead-btn'        => 'Create Inquiry',
 
                 'columns' => [
                     'contact-person'      => 'Contact Person',
                     'id'                  => 'ID',
-                    'lead-type'           => 'Lead Type',
-                    'lead-value'          => 'Lead Value',
-                    'sales-person'        => 'Sales Person',
+                    'lead-type'           => 'Client Type',
+                    'lead-value'          => 'Estimated Contract Value',
+                    'sales-person'        => 'Sales Representative',
                     'source'              => 'Source',
-                    'title'               => 'Title',
+                    'title'               => 'Event / Inquiry Name',
                     'tags'                => 'Tags',
-                    'expected-close-date' => 'Expected Close Date',
+                    'expected-close-date' => 'Decision Deadline',
                     'created-at'          => 'Created At',
                 ],
 
                 'toolbar' => [
                     'search' => [
-                        'title' => 'Search by Title',
+                        'title' => 'Search by Event or Client',
                     ],
 
                     'filters' => [
@@ -1994,25 +1995,25 @@ return [
         ],
 
         'create' => [
-            'title'          => 'Create Lead',
+            'title'          => 'Create Catering Inquiry',
             'save-btn'       => 'Save',
             'details'        => 'Details',
-            'details-info'   => 'Put The Basic Information of the Lead',
+            'details-info'   => 'Enter the event and catering requirements',
             'contact-person' => 'Contact Person',
             'contact-info'   => 'Information About the Contact Person',
-            'products'       => 'Products',
-            'products-info'  => 'Information About the Products',
+            'products'       => 'Menus & Services',
+            'products-info'  => 'Menus, packages, rentals, and services requested',
         ],
 
         'edit' => [
-            'title'          => 'Edit Lead',
+            'title'          => 'Edit Catering Inquiry',
             'save-btn'       => 'Save',
             'details'        => 'Details',
-            'details-info'   => 'Put The Basic Information of the Lead',
+            'details-info'   => 'Update the event and catering requirements',
             'contact-person' => 'Contact Person',
             'contact-info'   => 'Information About the Contact Person',
-            'products'       => 'Products',
-            'products-info'  => 'Information About the Products',
+            'products'       => 'Menus & Services',
+            'products-info'  => 'Menus, packages, rentals, and services requested',
         ],
 
         'common' => [
@@ -2232,19 +2233,19 @@ return [
             ],
 
             'over-all' => [
-                'average-lead-value'    => 'Average Lead Value',
-                'total-leads'           => 'Total Leads',
-                'average-leads-per-day' => 'Average Leads Per Day',
+                'average-lead-value'    => 'Average Inquiry Value',
+                'total-leads'           => 'Total Inquiries',
+                'average-leads-per-day' => 'Average Inquiries Per Day',
                 'total-quotations'      => 'Total Quotations',
                 'total-persons'         => 'Total Persons',
                 'total-organizations'   => 'Total Organizations',
             ],
 
             'total-leads' => [
-                'title' => 'Leads',
-                'total' => 'Total Leads',
-                'won'   => 'Won Leads',
-                'lost'  => 'Lost Leads',
+                'title' => 'Catering Inquiries',
+                'total' => 'Total Inquiries',
+                'won'   => 'Confirmed Inquiries',
+                'lost'  => 'Lost Inquiries',
             ],
 
             'revenue-by-sources' => [
@@ -2272,7 +2273,7 @@ return [
             ],
 
             'open-leads-by-states' => [
-                'title'       => 'Open Leads By Stages',
+                'title'       => 'Open Inquiries By Stage',
                 'empty-title' => 'No Data Available',
                 'empty-info'  => 'No data available for selected interval',
             ],
@@ -2282,9 +2283,9 @@ return [
     'layouts' => [
         'app-version'          => 'Version: :version',
         'dashboard'            => 'Dashboard',
-        'leads'                => 'Leads',
-        'quotes'               => 'Quotes',
-        'quote'                => 'Quote',
+        'leads'                => 'Catering Inquiries',
+        'quotes'               => 'Proposals',
+        'quote'                => 'Proposal',
         'mail'                 => [
             'title'   => 'Mail',
             'compose' => 'Compose',
@@ -2302,6 +2303,7 @@ return [
         'organizations'        => 'Organizations',
         'organization'         => 'Organization',
         'products'             => 'Products',
+        'catering-menus'       => 'Catering Menus',
         'product'              => 'Product',
         'settings'             => 'Settings',
         'user'                 => 'User',

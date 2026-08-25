@@ -152,6 +152,90 @@ class AttributeSeeder extends Seeder
                 'is_user_defined' => '0',
                 'created_at'      => $now,
                 'updated_at'      => $now,
+            ], [
+                'code'            => 'event_date',
+                'name'            => trans('installer::app.seeders.attributes.leads.event-date', [], $defaultLocale),
+                'type'            => 'date',
+                'entity_type'     => 'leads',
+                'lookup_type'     => null,
+                'validation'      => null,
+                'sort_order'      => '11',
+                'is_required'     => '0',
+                'is_unique'       => '0',
+                'quick_add'       => '1',
+                'is_user_defined' => '1',
+                'created_at'      => $now,
+                'updated_at'      => $now,
+            ], [
+                'code'            => 'guest_count',
+                'name'            => trans('installer::app.seeders.attributes.leads.guest-count', [], $defaultLocale),
+                'type'            => 'text',
+                'entity_type'     => 'leads',
+                'lookup_type'     => null,
+                'validation'      => 'numeric',
+                'sort_order'      => '12',
+                'is_required'     => '0',
+                'is_unique'       => '0',
+                'quick_add'       => '1',
+                'is_user_defined' => '1',
+                'created_at'      => $now,
+                'updated_at'      => $now,
+            ], [
+                'code'            => 'venue_location',
+                'name'            => trans('installer::app.seeders.attributes.leads.venue-location', [], $defaultLocale),
+                'type'            => 'text',
+                'entity_type'     => 'leads',
+                'lookup_type'     => null,
+                'validation'      => null,
+                'sort_order'      => '13',
+                'is_required'     => '0',
+                'is_unique'       => '0',
+                'quick_add'       => '1',
+                'is_user_defined' => '1',
+                'created_at'      => $now,
+                'updated_at'      => $now,
+            ], [
+                'code'            => 'event_type',
+                'name'            => trans('installer::app.seeders.attributes.leads.event-type', [], $defaultLocale),
+                'type'            => 'select',
+                'entity_type'     => 'leads',
+                'lookup_type'     => null,
+                'validation'      => null,
+                'sort_order'      => '14',
+                'is_required'     => '0',
+                'is_unique'       => '0',
+                'quick_add'       => '1',
+                'is_user_defined' => '1',
+                'created_at'      => $now,
+                'updated_at'      => $now,
+            ], [
+                'code'            => 'service_style',
+                'name'            => trans('installer::app.seeders.attributes.leads.service-style', [], $defaultLocale),
+                'type'            => 'select',
+                'entity_type'     => 'leads',
+                'lookup_type'     => null,
+                'validation'      => null,
+                'sort_order'      => '15',
+                'is_required'     => '0',
+                'is_unique'       => '0',
+                'quick_add'       => '1',
+                'is_user_defined' => '1',
+                'created_at'      => $now,
+                'updated_at'      => $now,
+            ], [
+                'code'            => 'dietary_requirements',
+                'name'            => trans('installer::app.seeders.attributes.leads.dietary-requirements', [], $defaultLocale),
+                'type'            => 'textarea',
+                'entity_type'     => 'leads',
+                'lookup_type'     => null,
+                'validation'      => null,
+                'sort_order'      => '16',
+                'is_required'     => '0',
+                'is_unique'       => '0',
+                'quick_add'       => '1',
+                'is_user_defined' => '1',
+                'created_at'      => $now,
+                'updated_at'      => $now,
             ],
 
             /**
@@ -641,5 +725,23 @@ class AttributeSeeder extends Seeder
                 'updated_at'      => $now,
             ],
         ]);
+
+        foreach ([
+            'event_type'    => ['Corporate Event', 'Wedding', 'Private Party', 'Government / Institutional', 'Conference / Exhibition', 'Other'],
+            'service_style' => ['Buffet', 'Plated Service', 'Canapes / Reception', 'Food Stations', 'Drop-off Catering', 'Staffed Catering'],
+        ] as $code => $options) {
+            $attributeId = DB::table('attributes')
+                ->where('entity_type', 'leads')
+                ->where('code', $code)
+                ->value('id');
+
+            foreach ($options as $sortOrder => $name) {
+                DB::table('attribute_options')->insert([
+                    'name'         => $name,
+                    'sort_order'   => $sortOrder + 1,
+                    'attribute_id' => $attributeId,
+                ]);
+            }
+        }
     }
 }
