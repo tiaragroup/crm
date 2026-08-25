@@ -26,7 +26,7 @@ class CateringMenuController extends Controller
 
     public function create(): View
     {
-        return $this->formView(new CateringPackage());
+        return $this->formView(new CateringPackage);
     }
 
     public function store(Request $request): RedirectResponse
