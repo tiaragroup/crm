@@ -43,7 +43,68 @@
         <div class="flex gap-2">
             @if ($isEdit)
                 <a href="{{ route('admin.quotes.word', $quote->id) }}" class="secondary-button">Download Word</a>
-                <a href="{{ route('admin.quotes.print', $quote->id) }}" class="secondary-button">Download PDF</a>
+                <x-admin::modal ref="pdfLanguageModal" size="normal">
+                    <x-slot:toggle>
+                        <button type="button" class="secondary-button">Download PDF</button>
+                    </x-slot>
+
+                    <x-slot:header>
+                        <div class="flex items-center gap-3">
+                            <div class="flex h-12 w-12 items-center justify-center rounded-lg bg-amber-50 dark:bg-gray-800">
+                                <img src="{{ asset('images/tiara-logo.png') }}" width="32" height="32" alt="Tiara Catering" style="object-fit: contain;">
+                            </div>
+                            <div>
+                                <p class="text-lg font-bold text-gray-800 dark:text-white">Export quotation PDF</p>
+                                <p class="mt-1 text-xs text-gray-500">Choose the language for this document.</p>
+                            </div>
+                        </div>
+                    </x-slot>
+
+                    <x-slot:content class="!border-b-0 !p-0">
+                        <div class="p-5">
+                            <div class="grid grid-cols-2 gap-4 max-sm:grid-cols-1">
+                                <a
+                                    href="{{ route('admin.quotes.print', ['id' => $quote->id, 'locale' => 'en']) }}"
+                                    target="_blank"
+                                    class="flex flex-col justify-between gap-8 rounded-lg border-2 border-gray-200 bg-white p-5 no-underline transition hover:border-brandColor hover:bg-amber-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-brandColor dark:hover:bg-gray-800"
+                                    @click="$refs.pdfLanguageModal.close()"
+                                >
+                                    <div class="flex items-center justify-between">
+                                        <span class="rounded-md bg-amber-50 px-3 py-2 text-xs font-bold text-brandColor dark:bg-gray-800">EN</span>
+                                        <span class="text-xl text-brandColor">→</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold text-gray-800 dark:text-white">English</p>
+                                        <p class="mt-1 text-xs leading-5 text-gray-500">Standard left-to-right quotation</p>
+                                    </div>
+                                </a>
+
+                                <a
+                                    href="{{ route('admin.quotes.print', ['id' => $quote->id, 'locale' => 'ar']) }}"
+                                    target="_blank"
+                                    dir="rtl"
+                                    lang="ar"
+                                    class="flex flex-col justify-between gap-8 rounded-lg border-2 border-gray-200 bg-white p-5 text-right no-underline transition hover:border-brandColor hover:bg-amber-50 dark:border-gray-700 dark:bg-gray-900 dark:hover:border-brandColor dark:hover:bg-gray-800"
+                                    @click="$refs.pdfLanguageModal.close()"
+                                >
+                                    <div class="flex items-center justify-between">
+                                        <span class="rounded-md bg-amber-50 px-3 py-2 text-sm font-bold text-brandColor dark:bg-gray-800">ع</span>
+                                        <span class="text-xl text-brandColor">←</span>
+                                    </div>
+                                    <div>
+                                        <p class="text-base font-bold text-gray-800 dark:text-white">العربية</p>
+                                        <p class="mt-1 text-xs leading-5 text-gray-500">عرض سعر كامل من اليمين إلى اليسار</p>
+                                    </div>
+                                </a>
+                            </div>
+
+                            <div class="mt-4 flex items-center gap-2 rounded-md bg-gray-50 px-4 py-3 text-xs text-gray-500 dark:bg-gray-950">
+                                <span class="h-2 w-2 rounded-full bg-brandColor"></span>
+                                <span>Your quotation data stays unchanged; only the exported PDF language changes.</span>
+                            </div>
+                        </div>
+                    </x-slot>
+                </x-admin::modal>
             @endif
             <button type="submit" class="primary-button">Save Proposal</button>
         </div>

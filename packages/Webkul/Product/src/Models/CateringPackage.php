@@ -10,9 +10,13 @@ class CateringPackage extends Model
 
     protected $fillable = [
         'name',
+        'name_ar',
         'description',
+        'description_ar',
         'setup_description',
+        'setup_description_ar',
         'service_inclusions',
+        'service_inclusions_ar',
         'price_per_person',
         'minimum_guests',
         'is_active',

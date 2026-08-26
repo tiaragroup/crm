@@ -32,7 +32,7 @@
                         <tbody>
                             @foreach ($menus as $menu)
                                 <tr class="border-t border-gray-100 dark:border-gray-800">
-                                    <td class="px-4 py-4"><p class="font-semibold text-gray-800 dark:text-white">{{ $menu->name }}</p><p class="mt-1 max-w-xl truncate text-xs text-gray-500">{{ $menu->description ?: 'No description' }}</p></td>
+                                    <td class="px-4 py-4"><p class="font-semibold text-gray-800 dark:text-white">{{ $menu->name }}</p>@if ($menu->name_ar)<p class="mt-1 text-sm text-gray-600" dir="rtl" lang="ar">{{ $menu->name_ar }}</p>@endif<p class="mt-1 max-w-xl truncate text-xs text-gray-500">{{ $menu->description ?: 'No description' }}</p></td>
                                     <td class="px-4 py-4 font-medium">SAR {{ number_format((float) $menu->price_per_person, 2) }}</td>
                                     <td class="px-4 py-4">{{ $menu->minimum_guests ?: '—' }}</td>
                                     <td class="px-4 py-4">{{ $menu->items_count }}</td>

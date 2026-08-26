@@ -147,7 +147,7 @@ class LeadController extends Controller
      */
     public function create(): View
     {
-        return view('admin::leads.create');
+        return view('admin::leads.create', $this->getOpportunityFormData());
     }
 
     /**
@@ -157,7 +157,7 @@ class LeadController extends Controller
     {
         Event::dispatch('lead.create.before');
 
-        $data = request()->all();
+        $data = $this->applyOpportunityPipeline(request()->all());
 
         $data['status'] = 1;
 
@@ -210,7 +210,10 @@ class LeadController extends Controller
     {
         $lead = $this->leadRepository->findOrFail($id);
 
-        return view('admin::leads.edit', compact('lead'));
+        return view('admin::leads.edit', array_merge(
+            compact('lead'),
+            $this->getOpportunityFormData()
+        ));
     }
 
     /**
@@ -239,14 +242,16 @@ class LeadController extends Controller
     {
         Event::dispatch('lead.update.before', $id);
 
-        $data = $request->all();
+        $data = $this->applyOpportunityPipeline($request->all());
 
         if (isset($data['lead_pipeline_stage_id'])) {
             $stage = $this->stageRepository->findOrFail($data['lead_pipeline_stage_id']);
 
             $data['lead_pipeline_id'] = $stage->lead_pipeline_id;
         } else {
-            $pipeline = $this->pipelineRepository->getDefaultPipeline();
+            $pipeline = ! empty($data['lead_pipeline_id'])
+                ? $this->pipelineRepository->findOrFail($data['lead_pipeline_id'])
+                : $this->pipelineRepository->getDefaultPipeline();
 
             $stage = $pipeline->stages()->first();
 
@@ -272,6 +277,69 @@ class LeadController extends Controller
         } else {
             return redirect()->route('admin.leads.index', $data['lead_pipeline_id']);
         }
+    }
+
+    /**
+     * Data required by the prospect/event inquiry form.
+     */
+    private function getOpportunityFormData(): array
+    {
+        $opportunityTypeAttribute = $this->attributeRepository->findOneWhere([
+            'entity_type' => 'leads',
+            'code'        => 'opportunity_type',
+        ]);
+
+        return [
+            'opportunityTypeAttribute' => $opportunityTypeAttribute,
+            'eventInquiryOption'       => $opportunityTypeAttribute?->options()->where('name', 'Event Inquiry')->first(),
+            'accountProspectOption'    => $opportunityTypeAttribute?->options()->where('name', 'Account Prospect')->first(),
+            'eventSalesPipeline'       => $this->pipelineRepository->findOneWhere(['name' => 'Event Sales Pipeline'])
+                ?? $this->pipelineRepository->getDefaultPipeline(),
+            'accountProspectPipeline'  => $this->pipelineRepository->findOneWhere(['name' => 'Account Prospecting Pipeline']),
+        ];
+    }
+
+    /**
+     * The opportunity type is the source of truth for pipeline assignment.
+     */
+    private function applyOpportunityPipeline(array $data): array
+    {
+        if (empty($data['opportunity_type'])) {
+            return $data;
+        }
+
+        $attribute = $this->attributeRepository->findOneWhere([
+            'entity_type' => 'leads',
+            'code'        => 'opportunity_type',
+        ]);
+
+        $option = $attribute?->options()->find($data['opportunity_type']);
+
+        if (! $option || ! in_array($option->name, ['Event Inquiry', 'Account Prospect'])) {
+            return $data;
+        }
+
+        $pipelineName = $option->name === 'Account Prospect'
+            ? 'Account Prospecting Pipeline'
+            : 'Event Sales Pipeline';
+
+        $pipeline = $this->pipelineRepository->findOneWhere(['name' => $pipelineName]);
+
+        if (! $pipeline) {
+            return $data;
+        }
+
+        $data['lead_pipeline_id'] = $pipeline->id;
+
+        if (! empty($data['lead_pipeline_stage_id'])) {
+            $stage = $this->stageRepository->find($data['lead_pipeline_stage_id']);
+
+            if (! $stage || $stage->lead_pipeline_id !== $pipeline->id) {
+                unset($data['lead_pipeline_stage_id']);
+            }
+        }
+
+        return $data;
     }
 
     /**

@@ -21,24 +21,28 @@ trait PDFHandler
             $fileName = Str::random(32);
         }
 
-        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
-
         if (in_array($direction = app()->getLocale(), ['ar', 'he'])) {
             $mPDF = new Mpdf([
+                'mode'         => 'utf-8',
+                'format'       => strtoupper($paper),
+                'autoScriptToLang' => true,
+                'autoLangToFont'   => true,
                 'margin_left'  => 0,
                 'margin_right' => 0,
                 'margin_top'   => 0,
                 'margin_bottom'=> 0,
             ]);
 
-            $mPDF->SetDirectionality($direction);
+            $mPDF->SetDirectionality('rtl');
 
             $mPDF->SetDisplayMode('fullpage');
 
-            $mPDF->WriteHTML($this->adjustArabicAndPersianContent($html));
+            $mPDF->WriteHTML($html);
 
             return response()->streamDownload(fn () => print ($mPDF->Output('', 'S')), $fileName.'.pdf');
         }
+
+        $html = mb_convert_encoding($html, 'HTML-ENTITIES', 'UTF-8');
 
         return Pdf::loadHTML($this->adjustArabicAndPersianContent($html))
             ->setPaper($paper, 'portrait')

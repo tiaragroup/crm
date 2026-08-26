@@ -1,3 +1,12 @@
+@php
+    $requestedPipelineId = request('pipeline_id');
+    $isProspectRequest = $accountProspectPipeline && (int) $requestedPipelineId === (int) $accountProspectPipeline->id;
+    $initialOpportunityTypeId = old('opportunity_type')
+        ?? ($isProspectRequest ? $accountProspectOption?->id : $eventInquiryOption?->id);
+    $initialPipelineId = $requestedPipelineId
+        ?? ($isProspectRequest ? $accountProspectPipeline?->id : $eventSalesPipeline?->id);
+@endphp
+
 <x-admin::layouts>
     <x-slot:title>
         @lang('admin::app.leads.create.title')
@@ -38,24 +47,6 @@
                 {!! view_render_event('admin.leads.create.save_button.after') !!}
             </div>
 
-            @if (request('stage_id'))
-                <input
-                    type="hidden"
-                    id="lead_pipeline_stage_id"
-                    name="lead_pipeline_stage_id"
-                    value="{{ request('stage_id') }}"
-                />
-            @endif
-
-            @if (request('pipeline_id'))
-                <input
-                    type="hidden"
-                    id="lead_pipeline_id"
-                    name="lead_pipeline_id"
-                    value="{{ request('pipeline_id') }}"
-                />
-            @endif
-
             <!-- Lead Create Component -->
             <v-lead-create>
                 <x-admin::shimmer.leads.datagrid />
@@ -71,6 +62,9 @@
             id="v-lead-create-template"
         >
             <div class="box-shadow flex flex-col gap-4 rounded-lg border border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+                <input type="hidden" name="lead_pipeline_id" :value="selectedPipelineId" />
+                <input v-if="selectedStageId" type="hidden" name="lead_pipeline_stage_id" :value="selectedStageId" />
+
                 {!! view_render_event('admin.leads.edit.form_controls.before') !!}
 
                 <div class="flex w-full gap-2 border-b border-gray-200 dark:border-gray-800">
@@ -116,13 +110,19 @@
                             </p>
                         </div>
 
-                        <div class="w-1/2 max-md:w-full">
+                        <div class="w-full max-w-5xl">
                             {!! view_render_event('admin.leads.create.details.attributes.before') !!}
 
                             <!-- Lead Details Title and Description -->
                             <x-admin::attributes
                                 :custom-attributes="app('Webkul\Attribute\Repositories\AttributeRepository')->findWhere([
-                                    ['code', 'NOTIN', ['lead_value', 'lead_type_id', 'lead_source_id', 'expected_close_date', 'user_id', 'lead_pipeline_id', 'lead_pipeline_stage_id']],
+                                    ['code', 'NOTIN', [
+                                        'lead_value', 'lead_type_id', 'lead_source_id', 'expected_close_date', 'user_id',
+                                        'lead_pipeline_id', 'lead_pipeline_stage_id', 'opportunity_type', 'interested_services',
+                                        'event_date', 'guest_count', 'venue_location', 'event_type', 'service_style',
+                                        'dietary_requirements', 'budget_range', 'date_flexibility', 'business_category',
+                                        'catering_frequency', 'potential_guest_volume', 'next_follow_up_date'
+                                    ]],
                                     'entity_type' => 'leads',
                                     'quick_add'   => 1
                                 ])"
@@ -133,6 +133,8 @@
                                     ],
                                 ]"
                             />
+
+                            @include('admin::leads.common.catering-opportunity-fields')
 
                             <!-- Lead Details Other input fields -->
                             <div class="flex gap-4 max-sm:flex-wrap">
@@ -155,7 +157,7 @@
                                 <div class="w-full">
                                     <x-admin::attributes
                                         :custom-attributes="app('Webkul\Attribute\Repositories\AttributeRepository')->findWhere([
-                                            ['code', 'IN', ['expected_close_date', 'user_id']],
+                                            ['code', 'IN', ['user_id']],
                                             'entity_type' => 'leads',
                                             'quick_add'   => 1
                                         ])"
@@ -200,26 +202,6 @@
 
                     {!! view_render_event('admin.leads.create.contact_person.after') !!}
 
-                    <!-- Product Section -->
-                    <div
-                        class="flex flex-col gap-4"
-                        id="products"
-                    >
-                        <div class="flex flex-col gap-1">
-                            <p class="text-base font-semibold dark:text-white">
-                                @lang('admin::app.leads.create.products')
-                            </p>
-
-                            <p class="text-gray-600 dark:text-white">
-                                @lang('admin::app.leads.create.products-info')
-                            </p>
-                        </div>
-
-                        <div>
-                            <!-- Product Component -->
-                            @include('admin::leads.common.products')
-                        </div>
-                    </div>
                 </div>
 
                 {!! view_render_event('admin.leads.form_controls.after') !!}
@@ -234,15 +216,58 @@
                     return {
                         activeTab: 'lead-details',
 
+                        opportunityType: @json((string) $initialOpportunityTypeId),
+
+                        eventInquiryOptionId: @json((string) $eventInquiryOption?->id),
+
+                        accountProspectOptionId: @json((string) $accountProspectOption?->id),
+
+                        eventPipelineId: @json($eventSalesPipeline?->id),
+
+                        accountProspectPipelineId: @json($accountProspectPipeline?->id),
+
+                        selectedPipelineId: @json($initialPipelineId),
+
+                        selectedStageId: @json(request('stage_id')),
+
                         tabs: [
                             { id: 'lead-details', label: '@lang('admin::app.leads.create.details')' },
-                            { id: 'contact-person', label: '@lang('admin::app.leads.create.contact-person')' },
-                            { id: 'products', label: '@lang('admin::app.leads.create.products')' }
+                            { id: 'contact-person', label: '@lang('admin::app.leads.create.contact-person')' }
                         ],
                     };
                 },
 
+                computed: {
+                    isEventInquiry() {
+                        return String(this.opportunityType) === String(this.eventInquiryOptionId);
+                    },
+
+                    opportunityHelpTitle() {
+                        return this.isEventInquiry
+                            ? @json(trans('admin::app.leads.opportunity.event-help-title'))
+                            : @json(trans('admin::app.leads.opportunity.prospect-help-title'));
+                    },
+
+                    opportunityHelpText() {
+                        return this.isEventInquiry
+                            ? @json(trans('admin::app.leads.opportunity.event-help-text'))
+                            : @json(trans('admin::app.leads.opportunity.prospect-help-text'));
+                    },
+                },
+
                 methods: {
+                    syncOpportunityPipeline() {
+                        const targetPipelineId = this.isEventInquiry
+                            ? this.eventPipelineId
+                            : this.accountProspectPipelineId;
+
+                        if (String(this.selectedPipelineId) !== String(targetPipelineId)) {
+                            this.selectedStageId = null;
+                        }
+
+                        this.selectedPipelineId = targetPipelineId;
+                    },
+
                     /**
                      * Scroll to the section.
                      *

@@ -10,6 +10,16 @@
 
     <div class="grid grid-cols-2 gap-4 max-md:grid-cols-1">
         <div>
+            <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Arabic name <span lang="ar">الاسم بالعربية</span></label>
+            <input dir="rtl" lang="ar" name="name_ar" value="{{ old('name_ar', $product?->name_ar) }}" placeholder="اسم المنتج بالعربية" class="{{ $fieldClass }}">
+        </div>
+
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Arabic description <span lang="ar">الوصف بالعربية</span></label>
+            <textarea dir="rtl" lang="ar" name="description_ar" rows="3" placeholder="وصف المنتج بالعربية" class="{{ $fieldClass }}">{{ old('description_ar', $product?->description_ar) }}</textarea>
+        </div>
+
+        <div>
             <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Menu section</label>
             <select name="catering_menu_category_id" class="{{ $fieldClass }}">
                 <option value="">Not a catering menu item</option>
@@ -31,6 +41,11 @@
         <div>
             <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Allergens / dietary notes</label>
             <input name="allergens" value="{{ old('allergens', $product?->allergens) }}" placeholder="Gluten, dairy, nuts…" class="{{ $fieldClass }}">
+        </div>
+
+        <div>
+            <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Arabic allergens <span lang="ar">ملاحظات الحساسية</span></label>
+            <input dir="rtl" lang="ar" name="allergens_ar" value="{{ old('allergens_ar', $product?->allergens_ar) }}" placeholder="الجلوتين، الألبان، المكسرات…" class="{{ $fieldClass }}">
         </div>
 
         <div>

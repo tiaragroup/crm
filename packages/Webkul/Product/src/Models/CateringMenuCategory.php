@@ -10,7 +10,9 @@ class CateringMenuCategory extends Model
 
     protected $fillable = [
         'name',
+        'name_ar',
         'description',
+        'description_ar',
         'sort_order',
         'is_active',
     ];

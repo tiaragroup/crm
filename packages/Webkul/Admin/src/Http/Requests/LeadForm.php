@@ -4,6 +4,7 @@ namespace Webkul\Admin\Http\Requests;
 
 use Carbon\Carbon;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Webkul\Attribute\Repositories\AttributeRepository;
 use Webkul\Attribute\Repositories\AttributeValueRepository;
 use Webkul\Core\Contracts\Validations\Decimal;
@@ -133,14 +134,22 @@ class LeadForm extends FormRequest
             'after:'.Carbon::yesterday()->format('Y-m-d'),
         ];
 
-        return [
-            ...$this->rules,
-            'products'              => 'array',
-            'products.*.product_id' => 'sometimes|required|exists:products,id',
-            'products.*.name'       => 'required_with:products.*.product_id',
-            'products.*.price'      => 'required_with:products.*.product_id',
-            'products.*.quantity'   => 'required_with:products.*.product_id',
-        ];
+        $opportunityTypeAttribute = $this->attributeRepository->findOneWhere([
+            'entity_type' => 'leads',
+            'code'        => 'opportunity_type',
+        ]);
+
+        if ($opportunityTypeAttribute) {
+            $this->rules['opportunity_type'] = [
+                'required',
+                Rule::exists('attribute_options', 'id')
+                    ->where('attribute_id', $opportunityTypeAttribute->id),
+            ];
+        }
+
+        $this->rules['interested_services'] = ['nullable', 'array'];
+
+        return $this->rules;
     }
 
     /**
@@ -148,11 +157,6 @@ class LeadForm extends FormRequest
      */
     public function messages(): array
     {
-        return [
-            'products.*.product_id.exists'      => trans('admin::app.leads.selected-product-not-exist'),
-            'products.*.name.required_with'     => trans('admin::app.leads.product-name-required'),
-            'products.*.price.required_with'    => trans('admin::app.leads.product-price-required'),
-            'products.*.quantity.required_with' => trans('admin::app.leads.product-quantity-required'),
-        ];
+        return [];
     }
 }

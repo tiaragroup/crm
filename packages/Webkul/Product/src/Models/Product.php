@@ -24,11 +24,14 @@ class Product extends Model implements ProductContract
      */
     protected $fillable = [
         'name',
+        'name_ar',
         'sku',
         'description',
+        'description_ar',
         'catering_menu_category_id',
         'unit_type',
         'allergens',
+        'allergens_ar',
         'sort_order',
         'is_active',
         'quantity',

@@ -79,6 +79,28 @@ try {
     assert(data_get($quote->document_snapshot, 'sales_contact.email') === $user->email);
     assert(str_starts_with($quote->proposal_reference, 'TC-2611-'));
 
+    $editRoute = app('router')->getRoutes()->getByName('admin.quotes.edit');
+    $editRoute->bind(request());
+    request()->setRouteResolver(fn () => $editRoute);
+    $editHtml = app(QuoteController::class)->edit($quote->id)->render();
+    assert(str_contains($editHtml, 'ref="pdfLanguageModal"'));
+    assert(str_contains($editHtml, 'Export quotation PDF'));
+    assert(str_contains($editHtml, 'locale=en'));
+    assert(str_contains($editHtml, 'locale=ar'));
+    assert(str_contains($editHtml, 'العربية'));
+
+    $arabicSnapshot = $quote->document_snapshot;
+    data_set($arabicSnapshot, 'company.company_name_ar', 'تيارا للضيافة');
+    data_set($arabicSnapshot, 'company.tagline_ar', 'خدمات ضيافة راقية - المملكة العربية السعودية');
+    data_set($arabicSnapshot, 'company.proposal_title_ar', 'عرض خدمات الضيافة');
+    data_set($arabicSnapshot, 'proposal.event_at', '2026-12-15 19:00:00');
+    data_set($arabicSnapshot, 'proposal.event_type_ar', 'حفل استقبال بالمأكولات الخفيفة');
+    $arabicHtml = view('admin::quotes.proposal-pdf', ['snapshot' => $arabicSnapshot, 'locale' => 'ar'])->render();
+    assert(str_contains($arabicHtml, '<html lang="ar" dir="rtl">'));
+    assert(str_contains($arabicHtml, 'القائمة المقترحة'));
+    assert(str_contains($arabicHtml, 'الإجمالي شامل الضريبة'));
+    assert(str_contains($arabicHtml, '15 ديسمبر 2026'));
+
     echo json_encode([
         'reference'     => $quote->proposal_reference,
         'subtotal'      => (float) $quote->sub_total,
@@ -88,6 +110,8 @@ try {
         'snapshot'      => ! empty($quote->document_snapshot),
         'form_rendered' => true,
         'grid_prepared' => true,
+        'pdf_languages' => ['en', 'ar'],
+        'arabic_rtl'    => true,
     ], JSON_PRETTY_PRINT).PHP_EOL;
 } finally {
     DB::rollBack();

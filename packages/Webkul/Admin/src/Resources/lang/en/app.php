@@ -2,8 +2,8 @@
 
 return [
     'acl' => [
-        'leads'           => 'Catering Inquiries',
-        'lead'            => 'Catering Inquiry',
+        'leads'           => 'Sales Opportunities',
+        'lead'            => 'Sales Opportunity',
         'quotes'          => 'Catering Proposals',
         'mail'            => 'Mail',
         'inbox'           => 'Inbox',
@@ -368,7 +368,7 @@ return [
 
         'layouts' => [
             'powered-by' => [
-                'description' => 'Powered by :krayin, an open-source project by :webkul.',
+                'description' => 'Powered by Tiara Group',
             ],
 
             'header' => [
@@ -1899,11 +1899,26 @@ return [
     ],
 
     'leads' => [
-        'create-success'    => 'Catering inquiry created successfully.',
-        'update-success'    => 'Catering inquiries updated successfully.',
-        'update-failed'     => 'Catering inquiries can not be deleted.',
-        'destroy-success'   => 'Catering inquiry deleted successfully.',
-        'destroy-failed'    => 'Catering inquiry can not be deleted.',
+        'create-success'    => 'Sales opportunity created successfully.',
+        'update-success'    => 'Sales opportunity updated successfully.',
+        'update-failed'     => 'Sales opportunity could not be updated.',
+        'destroy-success'   => 'Sales opportunity deleted successfully.',
+        'destroy-failed'    => 'Sales opportunity could not be deleted.',
+
+        'opportunity' => [
+            'type'                  => 'Opportunity Type',
+            'interests'             => 'Interested Services',
+            'interests-info'        => 'Record broad interests only. Menus, quantities, and pricing are configured in the quotation.',
+            'event-details'         => 'Event Inquiry Details',
+            'event-details-info'    => 'Complete what is currently known. The event date and venue may remain unconfirmed.',
+            'prospect-details'      => 'Account Prospect Details',
+            'prospect-details-info' => 'Use this for business development when the client does not yet have a specific event.',
+            'event-help-title'      => 'An event is being discussed',
+            'event-help-text'       => 'This opportunity will follow the Event Sales Pipeline through qualification and proposal.',
+            'prospect-help-title'   => 'No event is required yet',
+            'prospect-help-text'    => 'This opportunity will follow the Account Prospecting Pipeline. Assign an owner, then schedule meetings or visits as activities.',
+            'quotation-note'        => 'Menus, products, quantities, prices, discounts, tax, and revisions are managed only in the quotation.',
+        ],
 
         'file' => [
             'data-not-found'         => 'Data not found.',
@@ -1920,8 +1935,8 @@ return [
         ],
 
         'index' => [
-            'title'      => 'Catering Inquiries',
-            'create-btn' => 'Create Inquiry',
+            'title'      => 'Sales Opportunities',
+            'create-btn' => 'Create Opportunity',
 
             'datagrid' => [
                 'id'                  => 'ID',
@@ -1945,9 +1960,9 @@ return [
 
             'kanban' => [
                 'rotten-days'            => 'Inquiry is overdue by :days days',
-                'empty-list'             => 'Your Catering Inquiry List is Empty',
-                'empty-list-description' => 'Create an inquiry to begin the catering sales process.',
-                'create-lead-btn'        => 'Create Inquiry',
+                'empty-list'             => 'Your Sales Opportunity List is Empty',
+                'empty-list-description' => 'Create an event inquiry or account prospect to begin the sales process.',
+                'create-lead-btn'        => 'Create Opportunity',
 
                 'columns' => [
                     'contact-person'      => 'Contact Person',
@@ -1956,7 +1971,7 @@ return [
                     'lead-value'          => 'Estimated Contract Value',
                     'sales-person'        => 'Sales Representative',
                     'source'              => 'Source',
-                    'title'               => 'Event / Inquiry Name',
+                    'title'               => 'Opportunity Name',
                     'tags'                => 'Tags',
                     'expected-close-date' => 'Decision Deadline',
                     'created-at'          => 'Created At',
@@ -1995,10 +2010,10 @@ return [
         ],
 
         'create' => [
-            'title'          => 'Create Catering Inquiry',
+            'title'          => 'Create Sales Opportunity',
             'save-btn'       => 'Save',
             'details'        => 'Details',
-            'details-info'   => 'Enter the event and catering requirements',
+            'details-info'   => 'Start with an event inquiry or a potential catering account',
             'contact-person' => 'Contact Person',
             'contact-info'   => 'Information About the Contact Person',
             'products'       => 'Menus & Services',
@@ -2006,10 +2021,10 @@ return [
         ],
 
         'edit' => [
-            'title'          => 'Edit Catering Inquiry',
+            'title'          => 'Edit Sales Opportunity',
             'save-btn'       => 'Save',
             'details'        => 'Details',
-            'details-info'   => 'Update the event and catering requirements',
+            'details-info'   => 'Update the opportunity, qualification, and ownership details',
             'contact-person' => 'Contact Person',
             'contact-info'   => 'Information About the Contact Person',
             'products'       => 'Menus & Services',
@@ -2242,7 +2257,7 @@ return [
             ],
 
             'total-leads' => [
-                'title' => 'Catering Inquiries',
+                'title' => 'Sales Opportunities',
                 'total' => 'Total Inquiries',
                 'won'   => 'Confirmed Inquiries',
                 'lost'  => 'Lost Inquiries',
@@ -2273,7 +2288,7 @@ return [
             ],
 
             'open-leads-by-states' => [
-                'title'       => 'Open Inquiries By Stage',
+                'title'       => 'Open Opportunities By Stage',
                 'empty-title' => 'No Data Available',
                 'empty-info'  => 'No data available for selected interval',
             ],
@@ -2283,7 +2298,7 @@ return [
     'layouts' => [
         'app-version'          => 'Version: :version',
         'dashboard'            => 'Dashboard',
-        'leads'                => 'Catering Inquiries',
+        'leads'                => 'Sales Opportunities',
         'quotes'               => 'Proposals',
         'quote'                => 'Proposal',
         'mail'                 => [

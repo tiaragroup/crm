@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Http\Response;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Event;
 use Illuminate\View\View;
 use Prettus\Repository\Criteria\RequestCriteria;
@@ -21,6 +22,7 @@ use Webkul\Core\Traits\PDFHandler;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\Product\Models\CateringMenuCategory;
 use Webkul\Product\Models\CateringPackage;
+use Webkul\Product\Models\Product;
 use Webkul\Quote\Models\ProposalSetting;
 use Webkul\Quote\Repositories\QuoteRepository;
 use Webkul\Quote\Services\ProposalSnapshot;
@@ -125,9 +127,13 @@ class QuoteController extends Controller
             ->map(fn (CateringPackage $package) => [
                 'id'                 => $package->id,
                 'name'               => $package->name,
+                'name_ar'            => $package->name_ar,
                 'description'        => $package->description,
+                'description_ar'     => $package->description_ar,
                 'setup_description'  => $package->setup_description,
+                'setup_description_ar' => $package->setup_description_ar,
                 'service_inclusions' => $package->service_inclusions,
+                'service_inclusions_ar' => $package->service_inclusions_ar,
                 'price_per_person'   => (float) $package->price_per_person,
                 'minimum_guests'     => $package->minimum_guests,
                 'items'              => $package->items
@@ -136,10 +142,13 @@ class QuoteController extends Controller
                         'product' => [
                             'id'                     => $item->product->id,
                             'name'                   => $item->product->getRawOriginal('name') ?: $item->product->name,
+                            'name_ar'                => $item->product->getRawOriginal('name_ar') ?: $item->product->name_ar,
                             'description'            => $item->product->getRawOriginal('description') ?: $item->product->description,
+                            'description_ar'         => $item->product->getRawOriginal('description_ar') ?: $item->product->description_ar,
                             'catering_menu_category' => $item->product->cateringMenuCategory ? [
-                                'id'   => $item->product->cateringMenuCategory->id,
-                                'name' => $item->product->cateringMenuCategory->name,
+                                'id'      => $item->product->cateringMenuCategory->id,
+                                'name'    => $item->product->cateringMenuCategory->name,
+                                'name_ar' => $item->product->cateringMenuCategory->name_ar,
                             ] : null,
                         ],
                     ])
@@ -158,10 +167,13 @@ class QuoteController extends Controller
             ->map(fn (CateringMenuCategory $category) => [
                 'id'       => $category->id,
                 'name'     => $category->name,
+                'name_ar'  => $category->name_ar,
                 'products' => $category->products->map(fn ($product) => [
-                    'id'          => $product->id,
-                    'name'        => $product->getRawOriginal('name') ?: $product->name,
-                    'description' => $product->getRawOriginal('description') ?: $product->description,
+                    'id'             => $product->id,
+                    'name'           => $product->getRawOriginal('name') ?: $product->name,
+                    'name_ar'        => $product->getRawOriginal('name_ar') ?: $product->name_ar,
+                    'description'    => $product->getRawOriginal('description') ?: $product->description,
+                    'description_ar' => $product->getRawOriginal('description_ar') ?: $product->description_ar,
                 ])->values(),
             ])
             ->values();
@@ -281,7 +293,17 @@ class QuoteController extends Controller
      */
     public function print($id): Response|StreamedResponse
     {
-        $quote = $this->quoteRepository->with(['items', 'menuSections.items', 'person.organization', 'user'])->findOrFail($id);
+        $locale = request()->query('locale', 'en');
+
+        abort_unless(in_array($locale, ['en', 'ar'], true), 422, 'Unsupported proposal language.');
+
+        $quote = $this->quoteRepository->with([
+            'items',
+            'menuSections.category',
+            'menuSections.items.product',
+            'person.organization',
+            'user',
+        ])->findOrFail($id);
         $snapshot = $quote->document_snapshot ?: app(ProposalSnapshot::class)->build($quote);
         $snapshot['sales_contact'] = [
             'name'  => $quote->user?->name,
@@ -289,11 +311,104 @@ class QuoteController extends Controller
             'phone' => $quote->user?->phone,
         ];
 
-        return $this->downloadPDF(
-            view('admin::quotes.proposal-pdf', compact('snapshot'))->render(),
-            'Proposal_'.$quote->proposal_reference,
-            'letter'
-        );
+        $snapshot = $this->withArabicProposalContent($quote, $snapshot);
+        $previousLocale = App::getLocale();
+        App::setLocale($locale);
+
+        try {
+            return $this->downloadPDF(
+                view('admin::quotes.proposal-pdf', compact('snapshot', 'locale'))->render(),
+                'Proposal_'.$quote->proposal_reference.($locale === 'ar' ? '_AR' : '_EN'),
+                'letter'
+            );
+        } finally {
+            App::setLocale($previousLocale);
+        }
+    }
+
+    /**
+     * Add current Arabic catalog translations to old and new proposal snapshots.
+     */
+    private function withArabicProposalContent($quote, array $snapshot): array
+    {
+        $sectionModels = $quote->menuSections->values();
+        $menuItemNames = collect($snapshot['menu_sections'] ?? [])
+            ->flatMap(fn ($section) => collect($section['items'] ?? [])->pluck('name'))
+            ->filter()
+            ->unique()
+            ->values();
+        $productsByName = Product::query()
+            ->whereIn('name', $menuItemNames)
+            ->get()
+            ->keyBy('name');
+
+        $snapshot['menu_sections'] = collect($snapshot['menu_sections'] ?? [])
+            ->map(function (array $section, int $sectionIndex) use ($sectionModels, $productsByName) {
+                $sectionModel = $sectionModels->get($sectionIndex);
+                $itemModels = $sectionModel?->items?->values() ?? collect();
+                $section['name_ar'] = $sectionModel?->category?->name_ar ?: ($section['name_ar'] ?? $section['name'] ?? null);
+                $section['items'] = collect($section['items'] ?? [])
+                    ->map(function (array $item, int $itemIndex) use ($itemModels, $productsByName) {
+                        $product = $itemModels->get($itemIndex)?->product ?: $productsByName->get($item['name'] ?? '');
+                        $item['name_ar'] = $product?->name_ar ?: ($item['name_ar'] ?? $item['name'] ?? null);
+                        $item['description_ar'] = $product?->description_ar ?: ($item['description_ar'] ?? $item['description'] ?? null);
+
+                        return $item;
+                    })
+                    ->values()
+                    ->all();
+
+                return $section;
+            })
+            ->values()
+            ->all();
+
+        $pricingNames = collect($snapshot['pricing_items'] ?? [])->pluck('name')->filter()->unique();
+        $packagesByName = CateringPackage::query()->whereIn('name', $pricingNames)->get()->keyBy('name');
+        $productIds = $quote->items->pluck('product_id')->filter()->unique();
+        $productsById = Product::query()->whereIn('id', $productIds)->get()->keyBy('id');
+
+        $snapshot['pricing_items'] = collect($snapshot['pricing_items'] ?? [])
+            ->map(function (array $item, int $index) use ($quote, $packagesByName, $productsById) {
+                $itemModel = $quote->items->values()->get($index);
+                $translation = $itemModel?->product_id
+                    ? $productsById->get($itemModel->product_id)
+                    : $packagesByName->get($item['name'] ?? '');
+                $item['name_ar'] = $translation?->name_ar ?: ($item['name_ar'] ?? $item['name'] ?? null);
+                $item['description_ar'] = $translation?->description_ar ?: ($item['description_ar'] ?? $item['description'] ?? null);
+
+                return $item;
+            })
+            ->values()
+            ->all();
+
+        $primaryPackage = $packagesByName->first();
+        $proposal = $snapshot['proposal'] ?? [];
+        $eventTypeTranslations = [
+            'Corporate Event'       => 'فعالية شركات',
+            'Wedding'               => 'حفل زفاف',
+            'Private Party'         => 'مناسبة خاصة',
+            'Government / Institutional' => 'فعالية حكومية أو مؤسسية',
+            'Conference / Exhibition' => 'مؤتمر أو معرض',
+            'Finger Food Reception' => 'حفل استقبال بالمأكولات الخفيفة',
+            'Catering Function'     => 'فعالية ضيافة',
+        ];
+        $proposal['subject_ar'] = 'عرض خدمات الضيافة';
+        $proposal['event_type_ar'] = $eventTypeTranslations[$proposal['event_type'] ?? '']
+            ?? $primaryPackage?->name_ar
+            ?? ($proposal['event_type'] ?? null);
+        $proposal['venue_ar'] = $proposal['venue_ar'] ?? ($proposal['venue'] ?? null);
+        $proposal['setup_description_ar'] = $primaryPackage?->setup_description_ar
+            ?: ($proposal['setup_description_ar'] ?? $proposal['setup_description'] ?? null);
+        $proposal['service_inclusions_ar'] = $primaryPackage?->service_inclusions_ar
+            ? preg_split('/\r\n|\r|\n/', $primaryPackage->service_inclusions_ar)
+            : ($proposal['service_inclusions_ar'] ?? $proposal['service_inclusions'] ?? []);
+        $snapshot['proposal'] = $proposal;
+        $snapshot['company']['company_name_ar'] = $snapshot['company']['company_name_ar'] ?? 'تيارا للضيافة';
+        $snapshot['company']['tagline_ar'] = $snapshot['company']['tagline_ar'] ?? 'خدمات ضيافة راقية - المملكة العربية السعودية';
+        $snapshot['company']['proposal_title_ar'] = $snapshot['company']['proposal_title_ar'] ?? 'عرض خدمات الضيافة';
+
+        return $snapshot;
     }
 
     /**

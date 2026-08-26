@@ -96,9 +96,13 @@ class CateringMenuController extends Controller
     {
         return $request->validate([
             'name'                 => ['required', 'string', 'max:255', Rule::unique('catering_packages', 'name')->ignore($menu?->id)],
+            'name_ar'              => ['nullable', 'string', 'max:255'],
             'description'          => ['nullable', 'string'],
+            'description_ar'       => ['nullable', 'string'],
             'setup_description'    => ['nullable', 'string'],
+            'setup_description_ar' => ['nullable', 'string'],
             'service_inclusions'   => ['nullable', 'string'],
+            'service_inclusions_ar'=> ['nullable', 'string'],
             'price_per_person'     => ['required', 'numeric', 'min:0'],
             'minimum_guests'       => ['nullable', 'integer', 'min:1'],
             'is_active'            => ['required', 'boolean'],
@@ -114,9 +118,13 @@ class CateringMenuController extends Controller
     {
         return [
             'name'               => $data['name'],
+            'name_ar'            => $data['name_ar'] ?? null,
             'description'        => $data['description'] ?? null,
+            'description_ar'     => $data['description_ar'] ?? null,
             'setup_description'  => $data['setup_description'] ?? null,
+            'setup_description_ar' => $data['setup_description_ar'] ?? null,
             'service_inclusions' => $data['service_inclusions'] ?? null,
+            'service_inclusions_ar' => $data['service_inclusions_ar'] ?? null,
             'price_per_person'   => $data['price_per_person'],
             'minimum_guests'     => $data['minimum_guests'] ?? null,
             'is_active'          => (bool) $data['is_active'],

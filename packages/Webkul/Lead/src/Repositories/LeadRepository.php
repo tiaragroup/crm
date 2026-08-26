@@ -228,9 +228,9 @@ class LeadRepository extends Repository
             'entity_id' => $lead->id,
         ]));
 
-        $previousProductIds = $lead->products()->pluck('id');
+        if (array_key_exists('products', $data)) {
+            $previousProductIds = $lead->products()->pluck('id');
 
-        if (isset($data['products'])) {
             foreach ($data['products'] as $productId => $productInputs) {
                 if (Str::contains($productId, 'product_')) {
                     $this->productRepository->create(array_merge([
@@ -244,10 +244,10 @@ class LeadRepository extends Repository
                     $this->productRepository->update($productInputs, $productId);
                 }
             }
-        }
 
-        foreach ($previousProductIds as $productId) {
-            $this->productRepository->delete($productId);
+            foreach ($previousProductIds as $productId) {
+                $this->productRepository->delete($productId);
+            }
         }
 
         return $lead;

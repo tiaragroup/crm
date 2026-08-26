@@ -24,6 +24,7 @@ class ProductDataGrid extends DataGrid
                 'products.id',
                 'products.sku',
                 'products.name',
+                'products.name_ar',
                 'products.price',
                 'tags.name as tag_name',
             )
@@ -41,6 +42,7 @@ class ProductDataGrid extends DataGrid
         $this->addFilter('total_allocated', DB::raw('SUM('.$tablePrefix.'product_inventories.allocated'));
         $this->addFilter('total_on_hand', DB::raw('SUM('.$tablePrefix.'product_inventories.in_stock - '.$tablePrefix.'product_inventories.allocated'));
         $this->addFilter('tag_name', 'tags.name');
+        $this->addFilter('name_ar', 'products.name_ar');
 
         return $queryBuilder;
     }
@@ -66,6 +68,16 @@ class ProductDataGrid extends DataGrid
             'sortable'   => true,
             'searchable' => true,
             'filterable' => true,
+        ]);
+
+        $this->addColumn([
+            'index'      => 'name_ar',
+            'label'      => 'Arabic Name',
+            'type'       => 'string',
+            'sortable'   => true,
+            'searchable' => true,
+            'filterable' => true,
+            'closure'    => fn ($row) => $row->name_ar ?: '—',
         ]);
 
         $this->addColumn([
