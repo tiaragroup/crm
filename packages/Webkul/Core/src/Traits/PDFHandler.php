@@ -23,14 +23,14 @@ trait PDFHandler
 
         if (in_array($direction = app()->getLocale(), ['ar', 'he'])) {
             $mPDF = new Mpdf([
-                'mode'         => 'utf-8',
-                'format'       => strtoupper($paper),
+                'mode'             => 'utf-8',
+                'format'           => strtoupper($paper),
                 'autoScriptToLang' => true,
                 'autoLangToFont'   => true,
-                'margin_left'  => 0,
-                'margin_right' => 0,
-                'margin_top'   => 0,
-                'margin_bottom'=> 0,
+                'margin_left'      => 0,
+                'margin_right'     => 0,
+                'margin_top'       => 0,
+                'margin_bottom'    => 0,
             ]);
 
             $mPDF->SetDirectionality('rtl');

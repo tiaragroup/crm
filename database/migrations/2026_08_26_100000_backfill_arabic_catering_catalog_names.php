@@ -18,7 +18,7 @@ return new class extends Migration
         $translations = [
             'Muhammara Canape with Walnut & Pomegranate'             => 'كانابيه محمرة بالجوز والرمان',
             'Chicken Caesar Pita'                                    => 'خبز بيتا بالدجاج والسيزر',
-            'Feta, Rocca & Red Bell Pepper Vegetable Tortilla Roll' => 'تورتيلا بالخضار وجبنة الفيتا والجرجير والفلفل الأحمر',
+            'Feta, Rocca & Red Bell Pepper Vegetable Tortilla Roll'  => 'تورتيلا بالخضار وجبنة الفيتا والجرجير والفلفل الأحمر',
             'Labneh Sliced Bagel'                                    => 'بيغل باللبنة',
             'Tuna Mayo Pesto with Rocca & Jalapeno Pita'             => 'خبز بيتا بالتونة والمايونيز والبيستو والجرجير والهالبينو',
             'Halloumi Bagel'                                         => 'بيغل بجبنة الحلوم',
