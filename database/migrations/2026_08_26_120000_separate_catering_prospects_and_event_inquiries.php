@@ -144,7 +144,7 @@ return new class extends Migration
             }
 
             $optionSets = [
-                'opportunity_type' => ['Event Inquiry', 'Account Prospect'],
+                'opportunity_type'    => ['Event Inquiry', 'Account Prospect'],
                 'interested_services' => [
                     'Full-service Catering',
                     'Drop-off Catering',
@@ -169,8 +169,8 @@ return new class extends Migration
                     'Other',
                 ],
                 'catering_frequency' => ['One-time', 'Weekly', 'Monthly', 'Quarterly', 'Seasonal / Occasional', 'Unknown'],
-                'budget_range' => ['Not Known', 'Under SAR 10,000', 'SAR 10,000 - 25,000', 'SAR 25,000 - 50,000', 'SAR 50,000 - 100,000', 'Above SAR 100,000'],
-                'date_flexibility' => ['Fixed Date', 'Flexible by a Few Days', 'Month Only / Not Confirmed', 'Date Unknown'],
+                'budget_range'       => ['Not Known', 'Under SAR 10,000', 'SAR 10,000 - 25,000', 'SAR 25,000 - 50,000', 'SAR 50,000 - 100,000', 'Above SAR 100,000'],
+                'date_flexibility'   => ['Fixed Date', 'Flexible by a Few Days', 'Month Only / Not Confirmed', 'Date Unknown'],
             ];
 
             foreach ($optionSets as $attributeCode => $options) {

@@ -232,12 +232,12 @@ class ProductController extends Controller
         $request->validate([
             'name_ar'                      => ['nullable', 'string', 'max:255'],
             'description_ar'               => ['nullable', 'string'],
-            'catering_menu_category_id'  => ['nullable', 'integer', 'exists:catering_menu_categories,id'],
-            'unit_type'                  => ['required', 'in:menu_item,per_person,fixed,included'],
-            'allergens'                  => ['nullable', 'string'],
-            'allergens_ar'               => ['nullable', 'string'],
-            'sort_order'                 => ['nullable', 'integer', 'min:0'],
-            'is_active'                  => ['required', 'boolean'],
+            'catering_menu_category_id'    => ['nullable', 'integer', 'exists:catering_menu_categories,id'],
+            'unit_type'                    => ['required', 'in:menu_item,per_person,fixed,included'],
+            'allergens'                    => ['nullable', 'string'],
+            'allergens_ar'                 => ['nullable', 'string'],
+            'sort_order'                   => ['nullable', 'integer', 'min:0'],
+            'is_active'                    => ['required', 'boolean'],
         ]);
     }
 }

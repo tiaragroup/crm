@@ -113,14 +113,14 @@ if (in_array($format, ['pdf', 'pdf-ar'], true)) {
 
     if ($locale === 'ar') {
         $pdf = new Mpdf([
-            'mode'          => 'utf-8',
-            'format'        => 'LETTER',
+            'mode'             => 'utf-8',
+            'format'           => 'LETTER',
             'autoScriptToLang' => true,
             'autoLangToFont'   => true,
-            'margin_left'   => 0,
-            'margin_right'  => 0,
-            'margin_top'    => 0,
-            'margin_bottom' => 0,
+            'margin_left'      => 0,
+            'margin_right'     => 0,
+            'margin_top'       => 0,
+            'margin_bottom'    => 0,
         ]);
         $pdf->SetDirectionality('rtl');
         $pdf->SetDisplayMode('fullpage');

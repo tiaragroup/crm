@@ -37,7 +37,7 @@ return new class extends Migration
             });
 
             foreach ([
-                'Sandwiches & Canapes' => 'السندويشات والمقبلات الصغيرة',
+                'Sandwiches & Canapes'  => 'السندويشات والمقبلات الصغيرة',
                 'Hot Mini Bites'        => 'المقبلات الساخنة الصغيرة',
                 'Bakery'                => 'المخبوزات',
                 'Desserts'              => 'الحلويات',

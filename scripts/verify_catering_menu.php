@@ -59,18 +59,18 @@ try {
         'description_ar' => 'وصف طبق التحقق',
     ]);
     $request = Request::create('/admin/catering-menus', 'POST', [
-        'name'               => $name,
-        'name_ar'            => $arabicName,
-        'description'        => 'Reusable menu verification',
-        'description_ar'     => 'وصف قائمة قابلة لإعادة الاستخدام',
-        'price_per_person'   => 283,
-        'minimum_guests'     => 50,
-        'setup_description'  => 'Buffet setup',
-        'setup_description_ar' => 'تجهيز البوفيه',
-        'service_inclusions' => "Waiters\nServing equipment",
+        'name'                  => $name,
+        'name_ar'               => $arabicName,
+        'description'           => 'Reusable menu verification',
+        'description_ar'        => 'وصف قائمة قابلة لإعادة الاستخدام',
+        'price_per_person'      => 283,
+        'minimum_guests'        => 50,
+        'setup_description'     => 'Buffet setup',
+        'setup_description_ar'  => 'تجهيز البوفيه',
+        'service_inclusions'    => "Waiters\nServing equipment",
         'service_inclusions_ar' => "طاقم الخدمة\nمعدات التقديم",
-        'is_active'          => 1,
-        'product_ids'        => $productIds,
+        'is_active'             => 1,
+        'product_ids'           => $productIds,
     ]);
     $response = $controller->store($request);
     $menu = CateringPackage::query()->where('name', $name)->with('items')->firstOrFail();

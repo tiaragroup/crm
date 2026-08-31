@@ -117,17 +117,17 @@ class CateringMenuController extends Controller
     private function menuAttributes(array $data): array
     {
         return [
-            'name'               => $data['name'],
-            'name_ar'            => $data['name_ar'] ?? null,
-            'description'        => $data['description'] ?? null,
-            'description_ar'     => $data['description_ar'] ?? null,
-            'setup_description'  => $data['setup_description'] ?? null,
-            'setup_description_ar' => $data['setup_description_ar'] ?? null,
-            'service_inclusions' => $data['service_inclusions'] ?? null,
+            'name'                  => $data['name'],
+            'name_ar'               => $data['name_ar'] ?? null,
+            'description'           => $data['description'] ?? null,
+            'description_ar'        => $data['description_ar'] ?? null,
+            'setup_description'     => $data['setup_description'] ?? null,
+            'setup_description_ar'  => $data['setup_description_ar'] ?? null,
+            'service_inclusions'    => $data['service_inclusions'] ?? null,
             'service_inclusions_ar' => $data['service_inclusions_ar'] ?? null,
-            'price_per_person'   => $data['price_per_person'],
-            'minimum_guests'     => $data['minimum_guests'] ?? null,
-            'is_active'          => (bool) $data['is_active'],
+            'price_per_person'      => $data['price_per_person'],
+            'minimum_guests'        => $data['minimum_guests'] ?? null,
+            'is_active'             => (bool) $data['is_active'],
         ];
     }
 

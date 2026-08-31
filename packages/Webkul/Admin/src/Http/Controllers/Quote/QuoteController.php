@@ -125,18 +125,18 @@ class QuoteController extends Controller
             ->orderBy('name')
             ->get()
             ->map(fn (CateringPackage $package) => [
-                'id'                 => $package->id,
-                'name'               => $package->name,
-                'name_ar'            => $package->name_ar,
-                'description'        => $package->description,
-                'description_ar'     => $package->description_ar,
-                'setup_description'  => $package->setup_description,
-                'setup_description_ar' => $package->setup_description_ar,
-                'service_inclusions' => $package->service_inclusions,
+                'id'                    => $package->id,
+                'name'                  => $package->name,
+                'name_ar'               => $package->name_ar,
+                'description'           => $package->description,
+                'description_ar'        => $package->description_ar,
+                'setup_description'     => $package->setup_description,
+                'setup_description_ar'  => $package->setup_description_ar,
+                'service_inclusions'    => $package->service_inclusions,
                 'service_inclusions_ar' => $package->service_inclusions_ar,
-                'price_per_person'   => (float) $package->price_per_person,
-                'minimum_guests'     => $package->minimum_guests,
-                'items'              => $package->items
+                'price_per_person'      => (float) $package->price_per_person,
+                'minimum_guests'        => $package->minimum_guests,
+                'items'                 => $package->items
                     ->filter(fn ($item) => $item->product)
                     ->map(fn ($item) => [
                         'product' => [
@@ -428,13 +428,13 @@ class QuoteController extends Controller
         $primaryPackage = $packagesByName->first();
         $proposal = $snapshot['proposal'] ?? [];
         $eventTypeTranslations = [
-            'Corporate Event'       => 'فعالية شركات',
-            'Wedding'               => 'حفل زفاف',
-            'Private Party'         => 'مناسبة خاصة',
+            'Corporate Event'            => 'فعالية شركات',
+            'Wedding'                    => 'حفل زفاف',
+            'Private Party'              => 'مناسبة خاصة',
             'Government / Institutional' => 'فعالية حكومية أو مؤسسية',
-            'Conference / Exhibition' => 'مؤتمر أو معرض',
-            'Finger Food Reception' => 'حفل استقبال بالمأكولات الخفيفة',
-            'Catering Function'     => 'فعالية ضيافة',
+            'Conference / Exhibition'    => 'مؤتمر أو معرض',
+            'Finger Food Reception'      => 'حفل استقبال بالمأكولات الخفيفة',
+            'Catering Function'          => 'فعالية ضيافة',
         ];
         $proposal['subject_ar'] = 'عرض خدمات الضيافة';
         $proposal['event_type_ar'] = $eventTypeTranslations[$proposal['event_type'] ?? '']
