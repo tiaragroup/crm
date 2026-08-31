@@ -21,11 +21,17 @@
         multiple
     >
         @foreach ($options as $option)
+            @php
+                $optionLabelKey = 'admin::app.attribute-options.'.$attribute->code.'.'.\Illuminate\Support\Str::slug($option->name);
+                $translatedOptionLabel = trans($optionLabelKey);
+                $optionLabel = $translatedOptionLabel !== $optionLabelKey ? $translatedOptionLabel : $option->name;
+            @endphp
+
             <option
                 value="{{ $option->id }}"
                 {{ in_array($option->id, is_array($selectedOption) ? $selectedOption : explode(',', $selectedOption)) ? 'selected' : ''}}
             >
-                {{ $option->name }}
+                {{ $optionLabel }}
             </option>
         @endforeach
     </select>

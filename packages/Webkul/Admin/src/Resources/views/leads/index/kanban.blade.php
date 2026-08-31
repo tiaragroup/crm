@@ -40,7 +40,7 @@
                             <!-- Stage Title and Action -->
                             <div class="flex items-center justify-between">
                                 <span class="text-xs font-medium dark:text-white">
-                                    @{{ stage.name }} (@{{ stage.leads.meta.total }})
+                                 @{{ getStageName(stage) }} (@{{ stage.leads.meta.total }})
                                 </span>
 
                                 @if (bouncer()->hasPermission('leads.create'))
@@ -570,6 +570,12 @@
                         .catch(error => {
                             this.$emitter.emit('add-flash', { type: 'error', message: error.response.data.message });
                         });;
+                },
+
+                getStageName(stage) {
+                    const stageNames = @json(__('admin::app.leads.index.kanban.stage-names'));
+
+                    return stageNames[stage.name] ?? stage.name;
                 },
 
                 /**

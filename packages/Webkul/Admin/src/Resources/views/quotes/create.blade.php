@@ -15,7 +15,7 @@
 @endphp
 
 <x-admin::layouts>
-    <x-slot:title>Catering Proposal</x-slot>
+    <x-slot:title>@lang('admin::app.quotes.form.create-title')</x-slot>
 
     <x-admin::form :action="route('admin.quotes.store').'?'.http_build_query(array_merge(request()->route()->parameters(), request()->all()))">
         @include('admin::quotes.form', ['isEdit' => false])

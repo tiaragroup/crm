@@ -1,5 +1,13 @@
 @foreach ($customAttributes as $attribute)
     @php
+        $attribute = clone $attribute;
+        $attributeLabelKey = 'admin::app.attribute-labels.'.$attribute->entity_type.'.'.$attribute->code;
+        $translatedAttributeLabel = trans($attributeLabelKey);
+
+        if ($translatedAttributeLabel !== $attributeLabelKey) {
+            $attribute->name = $translatedAttributeLabel;
+        }
+
         $validations = [];
 
         if ($attribute->is_required) {

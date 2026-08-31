@@ -3,6 +3,18 @@
         ? app('Webkul\Attribute\Repositories\AttributeRepository')->getLookUpOptions($attribute->lookup_type)
         : $attribute->options()->orderBy('sort_order')->get();
 
+    $options = collect($options)->map(function ($option) use ($attribute) {
+        $option = clone $option;
+        $optionLabelKey = 'admin::app.attribute-options.'.$attribute->code.'.'.\Illuminate\Support\Str::slug($option->name);
+        $translatedOptionLabel = trans($optionLabelKey);
+
+        if ($translatedOptionLabel !== $optionLabelKey) {
+            $option->name = $translatedOptionLabel;
+        }
+
+        return $option;
+    });
+
     $selectedOption = old($attribute->code) ?: $value;
 @endphp
 

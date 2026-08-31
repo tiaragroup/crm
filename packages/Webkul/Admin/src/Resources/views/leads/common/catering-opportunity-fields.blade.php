@@ -51,7 +51,13 @@
                 @change="syncOpportunityPipeline"
             >
                 @foreach ($opportunityTypeAttribute?->options()->orderBy('sort_order')->get() ?? [] as $option)
-                    <option value="{{ $option->id }}">{{ $option->name }}</option>
+                    @php
+                        $optionLabelKey = 'admin::app.attribute-options.opportunity_type.'.\Illuminate\Support\Str::slug($option->name);
+                        $translatedOptionLabel = trans($optionLabelKey);
+                        $optionLabel = $translatedOptionLabel !== $optionLabelKey ? $translatedOptionLabel : $option->name;
+                    @endphp
+
+                    <option value="{{ $option->id }}">{{ $optionLabel }}</option>
                 @endforeach
             </x-admin::form.control-group.control>
 

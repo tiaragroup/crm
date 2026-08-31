@@ -96,20 +96,20 @@
                                             v-if="activity.title"
                                         >
                                             <p class="flex flex-wrap items-center gap-1 font-medium dark:text-white">
-                                                @{{ activity.title }}
+                                                @{{ localizedActivityTitle(activity) }}
 
                                                 <template v-if="activity.type == 'system' && activity.additional">
                                                     <p class="flex items-center gap-1">
                                                         <span>:</span>
 
                                                         <span class="break-words">
-                                                            @{{ (activity.additional.old.label ? String(activity.additional.old.label).replaceAll('<br>', ' ') : "@lang('admin::app.components.activities.index.empty')") }}
+                                                            @{{ localizedActivityLabel(activity, activity.additional.old.label) }}
                                                         </span>
 
                                                         <span class="icon-stats-up rotate-90 text-xl"></span>
 
                                                         <span class="break-words">
-                                                            @{{ (activity.additional.new.label ? String(activity.additional.new.label).replaceAll('<br>', ' ') : "@lang('admin::app.components.activities.index.empty')") }}
+                                                            @{{ localizedActivityLabel(activity, activity.additional.new.label) }}
                                                         </span>
                                                     </p>
                                                 </template>
@@ -447,6 +447,20 @@
 
                     activities: [],
 
+                    stageNames: @json(trans('admin::app.leads.index.kanban.stage-names')),
+
+                    activityAttributeNames: {
+                        'Stage': @json(app()->isLocale('ar') ? trans('admin::app.attribute-labels.leads.lead_pipeline_stage_id') : 'Stage'),
+                        'Opportunity Type': @json(app()->isLocale('ar') ? trans('admin::app.attribute-labels.leads.opportunity_type') : 'Opportunity Type'),
+                        'Sales Representative': @json(app()->isLocale('ar') ? trans('admin::app.attribute-labels.leads.user_id') : 'Sales Representative'),
+                        'Estimated Opportunity Value': @json(app()->isLocale('ar') ? trans('admin::app.attribute-labels.leads.lead_value') : 'Estimated Opportunity Value'),
+                        'Decision Deadline': @json(app()->isLocale('ar') ? trans('admin::app.attribute-labels.leads.expected_close_date') : 'Decision Deadline'),
+                    },
+
+                    systemCreatedTitle: @json(trans('admin::app.activities.created')),
+
+                    systemUpdatedTemplate: @json(trans('admin::app.activities.updated', ['attribute' => '__ATTRIBUTE__'])),
+
                     selectedType: this.activeType,
 
                     typeClasses: {
@@ -545,6 +559,31 @@
             },
 
             methods: {
+                localizedActivityTitle(activity) {
+                    if (activity.type !== 'system') {
+                        return activity.title;
+                    }
+
+                    if (activity.additional?.attribute) {
+                        const attribute = this.activityAttributeNames[activity.additional.attribute]
+                            ?? activity.additional.attribute;
+
+                        return this.systemUpdatedTemplate.replace('__ATTRIBUTE__', attribute);
+                    }
+
+                    return activity.title === 'Created' ? this.systemCreatedTitle : activity.title;
+                },
+
+                localizedActivityLabel(activity, label) {
+                    if (! label) {
+                        return @json(trans('admin::app.components.activities.index.empty'));
+                    }
+
+                    const cleanLabel = String(label).replaceAll('<br>', ' ');
+
+                    return this.stageNames[cleanLabel] ?? cleanLabel;
+                },
+
                 get() {
                     this.isLoading = true;
 

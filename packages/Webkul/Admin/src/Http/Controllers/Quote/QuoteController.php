@@ -66,7 +66,7 @@ class QuoteController extends Controller
 
         return view('admin::quotes.create', array_merge(
             compact('lead'),
-            $this->proposalFormData()
+            $this->proposalFormData($lead?->person_id)
         ));
     }
 
@@ -110,14 +110,14 @@ class QuoteController extends Controller
 
         return view('admin::quotes.edit', array_merge(
             compact('quote'),
-            $this->proposalFormData()
+            $this->proposalFormData($quote->person_id)
         ));
     }
 
     /**
      * Shared data for the catering proposal builder.
      */
-    protected function proposalFormData(): array
+    protected function proposalFormData(?int $selectedPersonId = null): array
     {
         $cateringPackages = CateringPackage::query()
             ->with(['items.product.cateringMenuCategory'])
@@ -184,17 +184,60 @@ class QuoteController extends Controller
             'menuCategories'   => $menuCategories,
             'people'           => Person::query()
                 ->with('organization:id,name')
-                ->orderBy('name')
+                ->when($selectedPersonId, fn ($query) => $query->whereKey($selectedPersonId), fn ($query) => $query->whereRaw('1 = 0'))
                 ->get(['id', 'name', 'emails', 'contact_numbers', 'organization_id'])
-                ->map(fn (Person $person) => [
-                    'id'      => $person->id,
-                    'name'    => $person->name,
-                    'company' => $person->organization?->name,
-                    'email'   => data_get($person->emails, '0.value'),
-                    'mobile'  => data_get($person->contact_numbers, '0.value'),
-                ])
+                ->map(fn (Person $person) => $this->formatContact($person))
                 ->values(),
             'users'  => User::query()->where('status', true)->orderBy('name')->get(['id', 'name']),
+        ];
+    }
+
+    /**
+     * Search contacts on demand without loading the full CRM contact table.
+     */
+    public function searchContacts(): JsonResponse
+    {
+        $term = trim((string) request()->query('q'));
+
+        if (mb_strlen($term) < 2) {
+            return response()->json(['data' => []]);
+        }
+
+        $escapedTerm = addcslashes($term, '\\%_');
+        $like = '%'.$escapedTerm.'%';
+
+        $contacts = Person::query()
+            ->with('organization:id,name')
+            ->where(function ($query) use ($like) {
+                $query->where('name', 'like', $like)
+                    ->orWhere('emails', 'like', $like)
+                    ->orWhere('contact_numbers', 'like', $like)
+                    ->orWhereHas('organization', fn ($organizationQuery) => $organizationQuery->where('name', 'like', $like));
+            })
+            ->when(
+                bouncer()->getAuthorizedUserIds(),
+                fn ($query, $userIds) => $query->whereIn('user_id', $userIds)
+            )
+            ->orderBy('name')
+            ->limit(20)
+            ->get(['id', 'name', 'emails', 'contact_numbers', 'organization_id'])
+            ->map(fn (Person $person) => $this->formatContact($person))
+            ->values();
+
+        return response()->json(['data' => $contacts]);
+    }
+
+    /**
+     * Return only the contact fields needed by the proposal form.
+     */
+    protected function formatContact(Person $person): array
+    {
+        return [
+            'id'      => $person->id,
+            'name'    => $person->name,
+            'company' => $person->organization?->name,
+            'email'   => data_get($person->emails, '0.value'),
+            'mobile'  => data_get($person->contact_numbers, '0.value'),
         ];
     }
 

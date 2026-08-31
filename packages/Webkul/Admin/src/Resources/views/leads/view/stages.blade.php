@@ -29,7 +29,7 @@
                     @click="update(stage)"
                 >
                     <span class="z-20 whitespace-nowrap text-sm font-medium dark:text-white">
-                        @{{ stage.name }}
+                        @{{ stageName(stage) }}
                     </span>
                 </div>
 
@@ -52,7 +52,7 @@
                         @click="stageToggler = ! stageToggler"
                     >
                         <span class="z-20 whitespace-nowrap text-sm font-medium dark:text-white">
-                             @{{ stages.filter(stage => ['won', 'lost'].includes(stage.code)).map(stage => stage.name).join('/') }}
+                             @{{ stages.filter(stage => ['won', 'lost'].includes(stage.code)).map(stage => stageName(stage)).join('/') }}
                         </span>
 
                         <span
@@ -71,7 +71,7 @@
                         v-for="stage in stages.filter(stage => ['won', 'lost'].includes(stage.code))"
                         @click="openModal(stage)"
                     >
-                        @{{ stage.name }}
+                        @{{ stageName(stage) }}
                     </x-admin::dropdown.menu.item>
 
                     {!! view_render_event('admin.leads.view.stages.items.dropdown.menu_item.after', ['lead' => $lead]) !!}
@@ -190,11 +190,17 @@
 
                     stages: @json($lead->pipeline->stages),
 
+                    stageNames: @json(trans('admin::app.leads.index.kanban.stage-names')),
+
                     stageToggler: '',
                 }
             },
 
             methods: {
+                stageName(stage) {
+                    return this.stageNames[stage.name] ?? stage.name;
+                },
+
                 openModal(stage) {
                     if (this.currentStage.code == stage.code) {
                         return;
