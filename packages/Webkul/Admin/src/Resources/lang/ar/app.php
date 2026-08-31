@@ -603,7 +603,7 @@ return [
             'unnamed-dish'             => 'طبق بدون اسم',
             'menu'                     => 'القائمة',
             'currency'                 => 'ر.س',
-            'statuses' => [
+            'statuses'                 => [
                 'draft'    => 'مسودة',
                 'sent'     => 'مرسل',
                 'accepted' => 'مقبول',
@@ -2035,7 +2035,7 @@ return [
                 'empty-list'             => 'قائمة العملاء الخاصة بك فارغة',
                 'empty-list-description' => 'قم بإنشاء عميل لتنظيم أهدافك.',
                 'create-lead-btn'        => 'إنشاء عميل',
-                'stage-names' => [
+                'stage-names'            => [
                     'New Inquiry'               => 'استفسار جديد',
                     'Contacted'                 => 'تم التواصل',
                     'Site Visit Scheduled'      => 'تمت جدولة زيارة الموقع',

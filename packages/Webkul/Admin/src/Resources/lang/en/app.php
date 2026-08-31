@@ -539,7 +539,7 @@ return [
             'unnamed-dish'             => 'Unnamed dish',
             'menu'                     => 'Menu',
             'currency'                 => 'SAR',
-            'statuses' => [
+            'statuses'                 => [
                 'draft'    => 'Draft',
                 'sent'     => 'Sent',
                 'accepted' => 'Accepted',
