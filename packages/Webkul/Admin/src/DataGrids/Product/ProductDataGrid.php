@@ -41,6 +41,7 @@ class ProductDataGrid extends DataGrid
         $this->addFilter('total_in_stock', DB::raw('SUM('.$tablePrefix.'product_inventories.in_stock'));
         $this->addFilter('total_allocated', DB::raw('SUM('.$tablePrefix.'product_inventories.allocated'));
         $this->addFilter('total_on_hand', DB::raw('SUM('.$tablePrefix.'product_inventories.in_stock - '.$tablePrefix.'product_inventories.allocated'));
+        $this->addFilter('name', 'products.name');
         $this->addFilter('tag_name', 'tags.name');
         $this->addFilter('name_ar', 'products.name_ar');
 

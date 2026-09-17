@@ -1,7 +1,19 @@
 <?php
 
 return [
+    'document-imports' => [
+        'title' => 'Document Inbox', 'upload' => 'Upload Document', 'review-title' => 'Review Document Import',
+        'file' => 'Document file', 'file-help' => 'PDF, Word, Excel or CSV. Maximum :size MB.', 'row' => 'Row',
+        'possible-duplicate' => 'Possible duplicate', 'use-existing-organization' => 'Use existing organization', 'use-existing-contact' => 'Use existing contact', 'create-new' => 'Create new', 'confidence' => 'Extraction confidence', 'confidence-levels' => ['high'=>'High confidence','medium'=>'Medium confidence','low'=>'Low confidence'],
+        'sections' => ['company'=>'Company','contact'=>'Contact','event'=>'Event / Opportunity'],
+        'fields' => ['name'=>'Name','name_ar'=>'Arabic name','email'=>'Email','phone'=>'Phone','website'=>'Website','cr_number'=>'CR number','vat_number'=>'VAT number','address'=>'Address','job_title'=>'Job title','title'=>'Opportunity title','event_type'=>'Event type','event_date'=>'Event date','guest_count'=>'Guest count','venue'=>'Venue','budget'=>'Budget','requirements'=>'Requirements / notes'],
+        'actions' => ['review'=>'Review','download'=>'Download original','delete'=>'Delete','process'=>'Upload and process','save'=>'Save review','import'=>'Import to CRM','cancel'=>'Cancel'],
+        'status' => ['uploaded'=>'Uploaded','extracting'=>'Extracting','extracted'=>'Extracted','review'=>'Ready for review','imported'=>'Imported','failed'=>'Failed'],
+        'datagrid' => ['id'=>'ID','filename'=>'Filename','type'=>'Document type','uploaded-by'=>'Uploaded by','status'=>'Status','company'=>'Company detected','contact'=>'Contact detected','created-at'=>'Created at','imported-at'=>'Imported at'],
+        'messages' => ['uploaded'=>'Document uploaded.','saved'=>'Review saved.','imported'=>'CRM records imported.','deleted'=>'Document import deleted.','already-imported'=>'This document has already been imported.','no-records'=>'There are no reviewed records to import.','title-required'=>'Each row needs an opportunity title or company name before import.','ai-no-credits'=>'Anthropic API credits are exhausted. Add credits, then upload the document again.','ai-invalid-key'=>'The Anthropic API key is invalid or has been revoked. Add a valid API key, then try again.','ai-rate-limit'=>'The Anthropic API rate limit was reached. Wait briefly, then try again.','ai-model'=>'The configured Claude model is unavailable or invalid. Check ANTHROPIC_DOCUMENT_MODEL.','ai-connection'=>'The application could not connect to Anthropic. Check the network and API endpoint, then try again.','processing-failed'=>'The document could not be processed. Please verify the file and Claude configuration, then try again.'],
+    ],
     'acl' => [
+        'document-imports' => 'Document Inbox',
         'leads'           => 'Sales Opportunities',
         'lead'            => 'Sales Opportunity',
         'quotes'          => 'Catering Proposals',
@@ -65,7 +77,7 @@ return [
                 'email'           => 'Registered Email',
                 'email-not-exist' => 'Email Not Exists',
                 'page-title'      => 'Forget Password',
-                'reset-link-sent' => 'Reset Password link sent',
+                'reset-link-sent' => 'We sent a password reset link to your email.',
                 'sign-in-link'    => 'Back to Sign In ?',
                 'submit-btn'      => 'Reset',
                 'title'           => 'Recover Password',
@@ -2083,6 +2095,14 @@ return [
                 'empty-list-description' => 'Create an event inquiry or account prospect to begin the sales process.',
                 'create-lead-btn'        => 'Create Opportunity',
 
+                'stages' => [
+                    'need-more-info' => 'Additional Information',
+                    'closed-at'      => 'Closed At',
+                    'won-value'      => 'Confirmed Sale Value',
+                    'lost-reason'    => 'Reason for Loss',
+                    'save-btn'       => 'Save',
+                ],
+
                 'stage-names' => [
                     'New Inquiry'               => 'New Inquiry',
                     'Contacted'                 => 'Contacted',
@@ -2426,6 +2446,13 @@ return [
                 'empty-info'  => 'No persons available for selected interval',
             ],
 
+            'top-salespeople' => [
+                'title'         => 'Top Salespeople',
+                'confirmed-won' => 'Confirmed / Won',
+                'empty-title'   => 'No Confirmed Sales Found',
+                'empty-info'    => 'No confirmed sales available for selected interval',
+            ],
+
             'open-leads-by-states' => [
                 'title'       => 'Open Opportunities By Stage',
                 'empty-title' => 'No Data Available',
@@ -2435,6 +2462,7 @@ return [
     ],
 
     'layouts' => [
+        'document-imports' => 'Document Inbox',
         'app-version'          => 'Version: :version',
         'dashboard'            => 'Dashboard',
         'leads'                => 'Sales Opportunities',

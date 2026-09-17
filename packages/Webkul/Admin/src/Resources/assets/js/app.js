@@ -31,17 +31,40 @@ window.app = createApp({
     methods: {
         onSubmit() {},
 
-        onInvalidSubmit({ values, errors, results }) {
+        onInvalidSubmit({ errors }) {
             setTimeout(() => {
                 const errorKeys = Object.entries(errors)
                     .map(([key, value]) => ({ key, value }))
-                    .filter(error => error["value"].length);
+                    .filter(error => error.value?.length);
 
-                let firstErrorElement = document.querySelector('[name="' + errorKeys[0]["key"] + '"]');
+                if (! errorKeys.length) {
+                    return;
+                }
 
-                firstErrorElement.scrollIntoView({
-                    behavior: "smooth",
-                    block: "center"
+                const firstErrorKey = errorKeys[0].key;
+                const namedElements = Array.from(document.getElementsByName(firstErrorKey));
+                const firstErrorElement = namedElements.find(element => element.type !== 'hidden')
+                    ?? namedElements[0];
+
+                const scrollTarget = firstErrorElement?.closest('.mb-2\\.5')
+                    ?? firstErrorElement;
+
+                if (scrollTarget) {
+                    scrollTarget.scrollIntoView({
+                        behavior: "smooth",
+                        block: "center"
+                    });
+                }
+
+                if (firstErrorElement && firstErrorElement.type !== 'hidden') {
+                    firstErrorElement.focus({ preventScroll: true });
+                }
+
+                this.$emitter.emit('add-flash', {
+                    type: 'error',
+                    message: document.documentElement.lang === 'ar'
+                        ? 'يرجى تصحيح الحقول المحددة قبل الحفظ.'
+                        : 'Please correct the highlighted fields before saving.',
                 });
             }, 100);
         },
@@ -131,4 +154,3 @@ app.directive("safe-html", DOMPurify);
 app.directive("tooltip", ToolTip);
 
 export default app;
-

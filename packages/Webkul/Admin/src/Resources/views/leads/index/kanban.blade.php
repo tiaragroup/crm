@@ -259,10 +259,16 @@
                                     </x-admin::form.control-group.label>
 
                                     <x-admin::form.control-group.control
-                                        type="price"
+                                        type="number"
                                         name="lead_value"
+                                        rules="required|numeric|min_value:0"
+                                        min="0"
+                                        step="0.01"
                                         ::value="finalized.lead.lead_value"
+                                        :label="trans('admin::app.leads.index.kanban.stages.won-value')"
                                     />
+
+                                    <x-admin::form.control-group.error control-name="lead_value" />
                                 </x-admin::form.control-group>
                             </template>
 
@@ -276,7 +282,11 @@
                                     <x-admin::form.control-group.control
                                         type="textarea"
                                         name="lost_reason"
+                                        rules="required"
+                                        :label="trans('admin::app.leads.index.kanban.stages.lost-reason')"
                                     />
+
+                                    <x-admin::form.control-group.error control-name="lost_reason" />
                                 </x-admin::form.control-group>
                             </template>
 

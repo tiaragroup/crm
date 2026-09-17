@@ -56,6 +56,9 @@
 
                 <!-- Total Persons -->
                 @include('admin::dashboard.index.top-persons')
+
+                <!-- Top Salespeople by Confirmed / Won opportunities -->
+                @include('admin::dashboard.index.top-salespeople')
             </div>
         </div>
 

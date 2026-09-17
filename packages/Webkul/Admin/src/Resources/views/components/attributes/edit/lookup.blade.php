@@ -65,7 +65,7 @@
                                     && ! isSearching
                                 )"
                             class="icon-cross-large cursor-pointer text-2xl text-gray-600"
-                            @click="remove"
+                            @click.stop="remove"
                         ></i>
 
                         <!-- Arrow Icon -->
@@ -96,12 +96,10 @@
                     <!-- Input Box -->
                     <input
                         type="text"
-                        v-model.lazy="searchTerm"
-                        v-debounce="500"
+                        v-model="searchTerm"
                         class="w-full rounded border border-gray-200 px-2.5 py-2 text-sm font-normal text-gray-800 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400"
                         placeholder="@lang('admin::app.components.attributes.lookup.search')"
                         ref="searchInput"
-                        @keyup="search"
                     />
 
                     <!-- Search Icon (absolute positioned) -->
@@ -117,7 +115,11 @@
                 </div>
 
                 <!-- Results List -->
-                <ul class="max-h-40 divide-y divide-gray-100 overflow-y-auto">
+                <ul
+                    class="max-h-40 divide-y divide-gray-100 overflow-y-auto"
+                    ref="resultsList"
+                    @scroll.passive="handleResultsScroll"
+                >
                     <li
                         v-for="item in filteredResults"
                         :key="item.id"
@@ -128,22 +130,39 @@
                         <span>@{{ item.name }}</span>
                     </li>
 
-                    <template v-if="filteredResults.length === 0">
+                    <li
+                        v-if="isSearching && filteredResults.length === 0"
+                        class="flex justify-center px-4 py-4"
+                    >
+                        <x-admin::spinner />
+                    </li>
+
+                    <template v-else-if="filteredResults.length === 0">
                         <li class="px-4 py-2 text-center text-gray-500">
                             @lang('admin::app.components.attributes.lookup.no-result-found')
                         </li>
-
-                        <li
-                            v-if="searchTerm.length > 2 && canAddNew"
-                            @click="handleResult({ id: '', name: searchTerm })"
-                            class="cursor-pointer border-t border-gray-800 px-4 py-2 text-gray-500 hover:bg-brandColor hover:text-white dark:border-gray-300 dark:text-gray-400 dark:hover:bg-gray-900 dark:hover:text-white"
-                        >
-                            <i class="icon-add text-md"></i>
-
-                            @lang('admin::app.components.lookup.add-as-new')
-                        </li>
                     </template>
+
+                    <li
+                        v-if="isLoadingMore"
+                        class="flex justify-center px-4 py-3"
+                    >
+                        <x-admin::spinner />
+                    </li>
                 </ul>
+
+                <button
+                    v-if="canAddNew"
+                    type="button"
+                    class="flex w-full shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-brandColor px-3 py-2 text-sm font-semibold text-brandColor transition-colors hover:bg-brandColor hover:text-white"
+                    @click.stop="handleResult({ id: '', name: searchTerm.trim() })"
+                >
+                    <i class="icon-add text-lg"></i>
+
+                    <span>@lang('admin::app.components.lookup.add-as-new')</span>
+
+                    <span v-if="searchTerm.trim()">“@{{ searchTerm.trim() }}”</span>
+                </button>
             </div>
         </div>
     </script>
@@ -174,6 +193,22 @@
                     lookupEntityRoute: `{{ route('admin.settings.attributes.lookup_entity') }}/${this.attribute.lookup_type}`,
 
                     isSearching: false,
+
+                    isLoadingMore: false,
+
+                    page: 1,
+
+                    perPage: 10,
+
+                    hasMore: true,
+
+                    searchTimer: null,
+
+                    cancelToken: null,
+
+                    requestSequence: 0,
+
+                    ignoreNextSearch: false,
                 };
             },
 
@@ -185,9 +220,25 @@
                 window.addEventListener('click', this.handleFocusOut);
             },
 
+            beforeUnmount() {
+                window.removeEventListener('click', this.handleFocusOut);
+
+                clearTimeout(this.searchTimer);
+
+                this.cancelToken?.cancel();
+            },
+
             watch: {
-                searchTerm(newVal, oldVal) {
-                    this.search();
+                searchTerm() {
+                    if (this.ignoreNextSearch) {
+                        this.ignoreNextSearch = false;
+
+                        return;
+                    }
+
+                    clearTimeout(this.searchTimer);
+
+                    this.searchTimer = setTimeout(() => this.search(true), 300);
                 },
             },
 
@@ -198,9 +249,7 @@
                  * @return {Array}
                  */
                 filteredResults() {
-                    return this.searchedResults.filter(item =>
-                        item.name.toLowerCase().includes(this.searchTerm.toLowerCase())
-                    );
+                    return this.searchedResults;
                 }
             },
 
@@ -215,29 +264,94 @@
                     this.showPopup = ! this.showPopup;
 
                     if (this.showPopup) {
-                        this.$nextTick(() => this.$refs.searchInput.focus());
+                        this.$nextTick(() => {
+                            this.$refs.searchInput.focus();
+
+                            if (! this.searchedResults.length) {
+                                this.search(true);
+                            }
+                        });
                     }
                 },
 
-                search() {
-                    if (this.searchTerm.length <= 2) {
-                        this.searchedResults = [];
-
-                        this.isSearching = false;
-
+                search(reset = true) {
+                    if (! reset && (! this.hasMore || this.isLoadingMore || this.isSearching)) {
                         return;
                     }
 
-                    this.isSearching = true;
+                    if (reset) {
+                        this.page = 1;
+                        this.hasMore = true;
+                        this.searchedResults = [];
+                        this.isSearching = true;
+
+                        this.cancelToken?.cancel();
+                        this.cancelToken = this.$axios.CancelToken.source();
+                    } else {
+                        this.isLoadingMore = true;
+                    }
+
+                    const requestSequence = ++this.requestSequence;
+                    const requestedPage = this.page;
 
                     this.$axios.get(this.searchRoute, {
-                            params: { query: this.searchTerm }
+                            params: {
+                                query: this.searchTerm.trim(),
+                                paginate: 1,
+                                page: requestedPage,
+                                per_page: this.perPage,
+                            },
+                            cancelToken: this.cancelToken?.token,
                         })
                         .then (response => {
-                            this.searchedResults = response.data;
+                            if (requestSequence !== this.requestSequence) {
+                                return;
+                            }
+
+                            const payload = response.data;
+                            const results = Array.isArray(payload) ? payload : (payload.data ?? []);
+
+                            this.searchedResults = reset
+                                ? results
+                                : this.mergeResults(this.searchedResults, results);
+
+                            this.hasMore = Array.isArray(payload)
+                                ? false
+                                : payload.current_page < payload.last_page;
+
+                            if (this.hasMore) {
+                                this.page = requestedPage + 1;
+                            }
                         })
-                        .catch (error => {})
-                        .finally(() => this.isSearching = false);
+                        .catch(error => {
+                            if (! this.$axios.isCancel(error)) {
+                                if (requestSequence === this.requestSequence) {
+                                    this.hasMore = false;
+                                }
+                            }
+                        })
+                        .finally(() => {
+                            if (requestSequence === this.requestSequence) {
+                                this.isSearching = false;
+                                this.isLoadingMore = false;
+                            }
+                        });
+                },
+
+                mergeResults(currentResults, newResults) {
+                    const results = new Map(currentResults.map(item => [String(item.id), item]));
+
+                    newResults.forEach(item => results.set(String(item.id), item));
+
+                    return Array.from(results.values());
+                },
+
+                handleResultsScroll(event) {
+                    const list = event.currentTarget;
+
+                    if (list.scrollTop + list.clientHeight >= list.scrollHeight - 32) {
+                        this.search(false);
+                    }
                 },
 
                 getLookUpEntity() {
@@ -260,12 +374,20 @@
 
                     this.selectedItem = result;
 
+                    this.ignoreNextSearch = this.searchTerm !== '';
+
                     this.searchTerm = '';
+
+                    this.searchedResults = [];
+
+                    this.page = 1;
+
+                    this.hasMore = true;
 
                     this.$emit('lookup-added', this.selectedItem);
                 },
 
-                handleFocusOut(e) {
+                handleFocusOut(event) {
                     const lookup = this.$refs.lookup;
 
                     if (

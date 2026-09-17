@@ -159,6 +159,17 @@ class AttributeController extends Controller
      */
     public function lookup($lookup): JsonResponse
     {
+        if (request()->boolean('paginate')) {
+            $results = $this->attributeRepository->getPaginatedLookUpOptions(
+                $lookup,
+                (string) request()->input('query', ''),
+                request()->integer('per_page', 10),
+                request()->integer('page', 1),
+            );
+
+            return response()->json($results);
+        }
+
         $results = $this->attributeRepository->getLookUpOptions($lookup, request()->input('query'));
 
         return response()->json($results);

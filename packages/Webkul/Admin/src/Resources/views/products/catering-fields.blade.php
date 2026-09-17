@@ -20,13 +20,17 @@
         </div>
 
         <div>
-            <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Menu section</label>
-            <select name="catering_menu_category_id" class="{{ $fieldClass }}">
-                <option value="">Not a catering menu item</option>
+            <label class="mb-1.5 block text-sm font-medium text-gray-800 dark:text-white">Menu section *</label>
+            <select name="catering_menu_category_id" required class="{{ $fieldClass }}">
+                <option value="" disabled @selected(! old('catering_menu_category_id', $product?->catering_menu_category_id))>Select category</option>
                 @foreach ($cateringMenuCategories as $category)
                     <option value="{{ $category->id }}" @selected((int) old('catering_menu_category_id', $product?->catering_menu_category_id) === $category->id)>{{ $category->name }}</option>
                 @endforeach
             </select>
+
+            @error('catering_menu_category_id')
+                <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
+            @enderror
         </div>
 
         <div>

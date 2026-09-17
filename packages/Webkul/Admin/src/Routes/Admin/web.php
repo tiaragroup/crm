@@ -49,3 +49,8 @@ require 'configuration-routes.php';
  * Rest routes.
  */
 require 'rest-routes.php';
+
+/**
+ * Document Inbox routes.
+ */
+require 'document-import-routes.php';

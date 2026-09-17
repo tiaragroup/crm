@@ -3,6 +3,7 @@
 namespace Webkul\Admin\Helpers\Reporting;
 
 use Carbon\Carbon;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Webkul\Lead\Repositories\LeadRepository;
 use Webkul\Lead\Repositories\StageRepository;
@@ -336,6 +337,41 @@ class Lead extends AbstractReporting
             ->groupBy('lead_pipeline_stage_id')
             ->orderByDesc('total')
             ->get();
+    }
+
+    /**
+     * Returns sales users ranked by opportunities in the catering
+     * "Confirmed / Won" stage during the selected dashboard period.
+     */
+    public function getTopSalespeople($limit = null): Collection
+    {
+        return $this->leadRepository
+            ->resetModel()
+            ->join('users', 'leads.user_id', '=', 'users.id')
+            ->join('lead_pipeline_stages', 'leads.lead_pipeline_stage_id', '=', 'lead_pipeline_stages.id')
+            ->select([
+                'users.id as user_id',
+                'users.name as user_name',
+                'users.email as user_email',
+            ])
+            ->selectRaw('COUNT(leads.id) as won_count')
+            ->selectRaw('SUM(COALESCE(leads.lead_value, 0)) as revenue')
+            ->where('lead_pipeline_stages.code', 'won')
+            ->where('lead_pipeline_stages.name', 'Confirmed / Won')
+            ->whereBetween('leads.closed_at', [$this->startDate, $this->endDate])
+            ->groupBy('users.id', 'users.name', 'users.email')
+            ->orderByDesc('won_count')
+            ->orderByDesc('revenue')
+            ->limit($limit)
+            ->get()
+            ->map(fn ($item) => [
+                'id'                => $item->user_id,
+                'name'              => $item->user_name,
+                'email'             => $item->user_email,
+                'won_count'         => (int) $item->won_count,
+                'revenue'           => (float) $item->revenue,
+                'formatted_revenue' => core()->formatBasePrice($item->revenue),
+            ]);
     }
 
     /**

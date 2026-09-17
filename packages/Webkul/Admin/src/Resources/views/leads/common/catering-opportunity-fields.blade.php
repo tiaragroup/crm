@@ -72,10 +72,6 @@
 
     @if ($sharedOpportunityAttributes->isNotEmpty())
         <div>
-            <p class="mb-2 text-sm font-semibold text-gray-800 dark:text-white">
-                @lang('admin::app.leads.opportunity.interests')
-            </p>
-
             <x-admin::attributes
                 :custom-attributes="$sharedOpportunityAttributes"
                 :entity="$opportunityEntity"

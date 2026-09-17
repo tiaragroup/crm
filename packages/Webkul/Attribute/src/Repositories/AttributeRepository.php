@@ -150,6 +150,53 @@ class AttributeRepository extends Repository
     }
 
     /**
+     * Return lookup results in small, ordered pages for remote dropdowns.
+     */
+    public function getPaginatedLookUpOptions(
+        string $lookup,
+        string $query = '',
+        int $perPage = 10,
+        int $page = 1,
+        array $columns = []
+    ) {
+        $lookupConfig = config('attribute_lookups.'.$lookup);
+
+        $valueColumn = $lookupConfig['value_column'] ?? 'id';
+        $labelColumn = $lookupConfig['label_column'] ?? 'name';
+
+        if (! count($columns)) {
+            $columns = ["{$valueColumn} as id", "{$labelColumn} as name"];
+        }
+
+        $query = urldecode(trim($query));
+        $perPage = max(1, min($perPage, 50));
+        $page = max(1, $page);
+        $repository = app($lookupConfig['repository']);
+        $builder = $repository->getModel()->newQuery();
+
+        if (Str::contains($lookupConfig['repository'], 'UserRepository')) {
+            $builder->where('status', 1);
+
+            $currentUser = auth()->guard('user')->user();
+
+            if ($currentUser?->view_permission === 'group') {
+                $userIds = bouncer()->getAuthorizedUserIds();
+
+                $builder->when(! empty($userIds), fn ($queryBuilder) => $queryBuilder->whereIn('id', $userIds));
+            } elseif ($currentUser?->view_permission === 'individual') {
+                $builder->where('id', $currentUser->id);
+            }
+        }
+
+        $builder
+            ->when($query !== '', fn ($queryBuilder) => $queryBuilder->where($labelColumn, 'like', "%{$query}%"))
+            ->orderBy($labelColumn)
+            ->orderBy($valueColumn);
+
+        return $builder->paginate($perPage, $columns, 'page', $page);
+    }
+
+    /**
      * @param  string  $lookup
      * @param  int|array  $entityId
      * @param  array  $columns

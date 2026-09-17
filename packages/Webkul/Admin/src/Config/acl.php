@@ -37,6 +37,36 @@ return [
         'route' => 'admin.quotes.index',
         'sort'  => 3,
     ], [
+        'key'   => 'document_imports',
+        'name'  => 'admin::app.acl.document-imports',
+        'route' => 'admin.document_imports.index',
+        'sort'  => 3.5,
+    ], [
+        'key'   => 'document_imports.view',
+        'name'  => 'admin::app.acl.view',
+        'route' => ['admin.document_imports.index', 'admin.document_imports.get', 'admin.document_imports.review', 'admin.document_imports.download'],
+        'sort'  => 1,
+    ], [
+        'key'   => 'document_imports.create',
+        'name'  => 'admin::app.acl.create',
+        'route' => ['admin.document_imports.create', 'admin.document_imports.store'],
+        'sort'  => 2,
+    ], [
+        'key'   => 'document_imports.edit',
+        'name'  => 'admin::app.acl.edit',
+        'route' => 'admin.document_imports.update',
+        'sort'  => 3,
+    ], [
+        'key'   => 'document_imports.import',
+        'name'  => 'admin::app.acl.import',
+        'route' => 'admin.document_imports.import',
+        'sort'  => 4,
+    ], [
+        'key'   => 'document_imports.delete',
+        'name'  => 'admin::app.acl.delete',
+        'route' => 'admin.document_imports.destroy',
+        'sort'  => 5,
+    ], [
         'key'   => 'quotes.create',
         'name'  => 'admin::app.acl.create',
         'route' => ['admin.quotes.create', 'admin.quotes.store'],

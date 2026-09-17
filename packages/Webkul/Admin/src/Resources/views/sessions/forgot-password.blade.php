@@ -22,6 +22,16 @@
                         <p class="text-xl font-bold text-gray-800 dark:text-white">
                             @lang('admin::app.users.forget-password.create.title')
                         </p>
+
+                        @if (session('success'))
+                            <div
+                                class="mt-3 rounded-md border border-green-200 bg-green-50 px-3 py-2 text-sm leading-5 text-green-700 dark:border-green-800 dark:bg-green-950 dark:text-green-200"
+                                role="status"
+                                aria-live="polite"
+                            >
+                                {{ session('success') }}
+                            </div>
+                        @endif
                     </div>
 
                     <div class="border-y p-4 dark:border-gray-800">

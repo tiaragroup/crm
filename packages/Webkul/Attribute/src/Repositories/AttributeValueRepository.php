@@ -72,7 +72,12 @@ class AttributeValueRepository extends Repository
             }
 
             if ($attribute->type === 'multiselect' || $attribute->type === 'checkbox') {
-                $data[$attribute->code] = implode(',', $data[$attribute->code]);
+                $selectedValues = array_filter(
+                    (array) $data[$attribute->code],
+                    fn ($value) => $value !== '' && $value !== null
+                );
+
+                $data[$attribute->code] = implode(',', $selectedValues);
             }
 
             if ($attribute->type === 'email' || $attribute->type === 'phone') {

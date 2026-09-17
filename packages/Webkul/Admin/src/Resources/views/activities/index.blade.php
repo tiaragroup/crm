@@ -285,8 +285,7 @@
                                         <div class="flex gap-1.5">
                                             <div class="flex flex-col gap-1.5">
                                                 <p class="text-gray-600 dark:text-gray-300">
-                                                    {{-- @{{ record.comment }} --}}
-                                                    @{{ record.comment.length > 180 ? record.comment.slice(0, 180) + '...' : record.comment }}
+                                                    @{{ truncateComment(record.comment) }}
                                                 </p>
 
                                                 <p v-html="record.lead_title"></p>
@@ -462,6 +461,19 @@
                 },
 
                 methods: {
+                    /**
+                     * Render optional descriptions without breaking the record list.
+                     */
+                    truncateComment(comment) {
+                        if (! comment) {
+                            return '—';
+                        }
+
+                        return comment.length > 180
+                            ? comment.slice(0, 180) + '...'
+                            : comment;
+                    },
+
                     /**
                      * Toggle view type.
                      *

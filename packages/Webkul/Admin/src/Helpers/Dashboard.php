@@ -113,6 +113,14 @@ class Dashboard
     }
 
     /**
+     * Returns sales users ranked by confirmed opportunities.
+     */
+    public function getTopSalespeople(): Collection
+    {
+        return $this->leadReporting->getTopSalespeople(5);
+    }
+
+    /**
      * Get the start date.
      *
      * @return \Carbon\Carbon

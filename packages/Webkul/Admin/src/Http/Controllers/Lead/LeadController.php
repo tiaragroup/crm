@@ -371,7 +371,7 @@ class LeadController extends Controller
     public function updateStage(int $id)
     {
         $this->validate(request(), [
-            'lead_pipeline_stage_id' => 'required',
+            'lead_pipeline_stage_id' => ['required', 'integer'],
         ]);
 
         $lead = $this->leadRepository->findOrFail($id);
@@ -380,16 +380,21 @@ class LeadController extends Controller
             ->where('id', request()->input('lead_pipeline_stage_id'))
             ->firstOrFail();
 
+        $validated = $this->validate(request(), [
+            'closed_at'  => ['nullable', 'date'],
+            'lead_value' => $stage->code === 'won'
+                ? ['required', 'numeric', 'min:0']
+                : ['nullable', 'numeric', 'min:0'],
+            'lost_reason' => $stage->code === 'lost'
+                ? ['required', 'string']
+                : ['nullable', 'string'],
+        ]);
+
         Event::dispatch('lead.update.before', $id);
 
-        $payload = request()->merge([
+        $payload = array_merge($validated, [
             'entity_type'            => 'leads',
             'lead_pipeline_stage_id' => $stage->id,
-        ])->only([
-            'closed_at',
-            'lost_reason',
-            'lead_pipeline_stage_id',
-            'entity_type',
         ]);
 
         $lead = $this->leadRepository->update($payload, $id, ['lead_pipeline_stage_id']);

@@ -34,6 +34,14 @@ return [
         'icon-class' => 'icon-quote',
     ],
 
+    [
+        'key'        => 'document_imports',
+        'name'       => 'admin::app.layouts.document-imports',
+        'route'      => 'admin.document_imports.index',
+        'sort'       => 3.5,
+        'icon-class' => 'icon-file',
+    ],
+
     /**
      * Emails.
      */

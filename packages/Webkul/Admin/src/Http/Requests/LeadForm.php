@@ -67,7 +67,9 @@ class LeadForm extends FormRequest
                 $validations = [];
 
                 if ($attribute->type == 'boolean') {
-                    continue;
+                    $validations[$attribute->code] = $attribute->is_required
+                        ? ['accepted']
+                        : ['nullable', 'boolean'];
                 } elseif ($attribute->type == 'address') {
                     if (! $attribute->is_required) {
                         continue;

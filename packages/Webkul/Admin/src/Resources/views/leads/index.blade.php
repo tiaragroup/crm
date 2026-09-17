@@ -23,9 +23,14 @@
         {!! view_render_event('admin.leads.index.header.right.before') !!}
 
         <div class="flex items-center gap-x-2.5">
-            <!-- Upload File for Lead Creation -->
-            @if(core()->getConfigData('general.magic_ai.doc_generation.enabled'))
-                @include('admin::leads.index.upload')
+            <!-- Document imports are managed from the dedicated Document Inbox. -->
+            @if (bouncer()->hasPermission('document_imports.view'))
+                <a
+                    href="{{ route('admin.document_imports.index') }}"
+                    class="secondary-button"
+                >
+                    @lang('admin::app.document-imports.title')
+                </a>
             @endif
 
             @if ((request()->view_type ?? "kanban") == "table")
