@@ -615,7 +615,7 @@ return [
             'unnamed-dish'             => 'طبق بدون اسم',
             'menu'                     => 'القائمة',
             'currency'                 => 'ر.س',
-            'statuses' => [
+            'statuses'                 => [
                 'draft'    => 'مسودة',
                 'sent'     => 'مرسل',
                 'accepted' => 'مقبول',
