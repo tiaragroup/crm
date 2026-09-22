@@ -14,7 +14,7 @@ return [
     ],
     'service-errors' => [
         'unauthorized'                  => 'This action is unauthorized.',
-        'unsupported-proposal-language'=> 'Unsupported proposal language.',
+        'unsupported-proposal-language' => 'Unsupported proposal language.',
         'ai-not-configured'             => 'The document AI service is not configured.',
         'ai-truncated'                  => 'The document AI response was truncated. Increase the Claude output token limit.',
         'ai-invalid-data'               => 'The document AI service returned invalid structured data.',
