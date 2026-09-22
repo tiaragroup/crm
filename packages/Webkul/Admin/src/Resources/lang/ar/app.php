@@ -2,15 +2,15 @@
 
 return [
     'document-imports' => [
-        'title' => 'صندوق المستندات', 'upload' => 'رفع مستند', 'review-title' => 'مراجعة استيراد المستند',
-        'file' => 'ملف المستند', 'file-help' => 'PDF أو Word أو Excel أو CSV. الحد الأقصى :size ميجابايت.', 'row' => 'صف',
-        'possible-duplicate' => 'سجل مكرر محتمل', 'use-existing-organization' => 'استخدام منشأة موجودة', 'use-existing-contact' => 'استخدام جهة اتصال موجودة', 'create-new' => 'إنشاء جديد', 'confidence' => 'درجة ثقة الاستخراج', 'confidence-levels' => ['high'=>'ثقة عالية','medium'=>'ثقة متوسطة','low'=>'ثقة منخفضة'],
-        'sections' => ['company'=>'المنشأة','contact'=>'جهة الاتصال','event'=>'الفعالية / الفرصة'],
-        'fields' => ['name'=>'الاسم','name_ar'=>'الاسم بالعربية','email'=>'البريد الإلكتروني','phone'=>'الهاتف','website'=>'الموقع الإلكتروني','cr_number'=>'رقم السجل التجاري','vat_number'=>'الرقم الضريبي','address'=>'العنوان','job_title'=>'المسمى الوظيفي','title'=>'عنوان الفرصة','event_type'=>'نوع الفعالية','event_date'=>'تاريخ الفعالية','guest_count'=>'عدد الضيوف','venue'=>'الموقع','budget'=>'الميزانية','requirements'=>'المتطلبات / الملاحظات'],
-        'actions' => ['review'=>'مراجعة','download'=>'تنزيل الملف الأصلي','delete'=>'حذف','process'=>'رفع ومعالجة','save'=>'حفظ المراجعة','import'=>'استيراد إلى النظام','cancel'=>'إلغاء'],
-        'status' => ['uploaded'=>'تم الرفع','extracting'=>'جارٍ الاستخراج','extracted'=>'تم الاستخراج','review'=>'جاهز للمراجعة','imported'=>'تم الاستيراد','failed'=>'فشل'],
-        'datagrid' => ['id'=>'المعرف','filename'=>'اسم الملف','type'=>'نوع المستند','uploaded-by'=>'رفعه','status'=>'الحالة','company'=>'المنشأة المكتشفة','contact'=>'جهة الاتصال المكتشفة','created-at'=>'تاريخ الرفع','imported-at'=>'تاريخ الاستيراد'],
-        'messages' => ['uploaded'=>'تم رفع المستند.','saved'=>'تم حفظ المراجعة.','imported'=>'تم استيراد سجلات CRM.','deleted'=>'تم حذف استيراد المستند.','already-imported'=>'تم استيراد هذا المستند مسبقاً.','no-records'=>'لا توجد سجلات مراجعة للاستيراد.','title-required'=>'يجب إدخال عنوان الفرصة أو اسم المنشأة لكل صف قبل الاستيراد.','ai-no-credits'=>'نفد رصيد واجهة Anthropic API. أضف رصيداً ثم ارفع المستند مرة أخرى.','ai-invalid-key'=>'مفتاح Anthropic API غير صالح أو تم إلغاؤه. أضف مفتاحاً صالحاً ثم حاول مرة أخرى.','ai-rate-limit'=>'تم بلوغ حد طلبات Anthropic API. انتظر قليلاً ثم حاول مرة أخرى.','ai-model'=>'نموذج Claude المحدد غير متاح أو غير صالح. تحقق من ANTHROPIC_DOCUMENT_MODEL.','ai-connection'=>'تعذر اتصال النظام بخدمة Anthropic. تحقق من الشبكة وعنوان API ثم حاول مرة أخرى.','processing-failed'=>'تعذرت معالجة المستند. تحقق من الملف وإعدادات Claude ثم حاول مرة أخرى.'],
+        'title'              => 'صندوق المستندات', 'upload' => 'رفع مستند', 'review-title' => 'مراجعة استيراد المستند',
+        'file'               => 'ملف المستند', 'file-help' => 'PDF أو Word أو Excel أو CSV. الحد الأقصى :size ميجابايت.', 'row' => 'صف',
+        'possible-duplicate' => 'سجل مكرر محتمل', 'use-existing-organization' => 'استخدام منشأة موجودة', 'use-existing-contact' => 'استخدام جهة اتصال موجودة', 'create-new' => 'إنشاء جديد', 'confidence' => 'درجة ثقة الاستخراج', 'confidence-levels' => ['high'=>'ثقة عالية', 'medium'=>'ثقة متوسطة', 'low'=>'ثقة منخفضة'],
+        'sections'           => ['company'=>'المنشأة', 'contact'=>'جهة الاتصال', 'event'=>'الفعالية / الفرصة'],
+        'fields'             => ['name'=>'الاسم', 'name_ar'=>'الاسم بالعربية', 'email'=>'البريد الإلكتروني', 'phone'=>'الهاتف', 'website'=>'الموقع الإلكتروني', 'cr_number'=>'رقم السجل التجاري', 'vat_number'=>'الرقم الضريبي', 'address'=>'العنوان', 'job_title'=>'المسمى الوظيفي', 'title'=>'عنوان الفرصة', 'event_type'=>'نوع الفعالية', 'event_date'=>'تاريخ الفعالية', 'guest_count'=>'عدد الضيوف', 'venue'=>'الموقع', 'budget'=>'الميزانية', 'requirements'=>'المتطلبات / الملاحظات'],
+        'actions'            => ['review'=>'مراجعة', 'download'=>'تنزيل الملف الأصلي', 'delete'=>'حذف', 'process'=>'رفع ومعالجة', 'save'=>'حفظ المراجعة', 'import'=>'استيراد إلى النظام', 'cancel'=>'إلغاء'],
+        'status'             => ['uploaded'=>'تم الرفع', 'extracting'=>'جارٍ الاستخراج', 'extracted'=>'تم الاستخراج', 'review'=>'جاهز للمراجعة', 'imported'=>'تم الاستيراد', 'failed'=>'فشل'],
+        'datagrid'           => ['id'=>'المعرف', 'filename'=>'اسم الملف', 'type'=>'نوع المستند', 'uploaded-by'=>'رفعه', 'status'=>'الحالة', 'company'=>'المنشأة المكتشفة', 'contact'=>'جهة الاتصال المكتشفة', 'created-at'=>'تاريخ الرفع', 'imported-at'=>'تاريخ الاستيراد'],
+        'messages'           => ['uploaded'=>'تم رفع المستند.', 'saved'=>'تم حفظ المراجعة.', 'imported'=>'تم استيراد سجلات CRM.', 'deleted'=>'تم حذف استيراد المستند.', 'already-imported'=>'تم استيراد هذا المستند مسبقاً.', 'no-records'=>'لا توجد سجلات مراجعة للاستيراد.', 'title-required'=>'يجب إدخال عنوان الفرصة أو اسم المنشأة لكل صف قبل الاستيراد.', 'ai-no-credits'=>'نفد رصيد واجهة Anthropic API. أضف رصيداً ثم ارفع المستند مرة أخرى.', 'ai-invalid-key'=>'مفتاح Anthropic API غير صالح أو تم إلغاؤه. أضف مفتاحاً صالحاً ثم حاول مرة أخرى.', 'ai-rate-limit'=>'تم بلوغ حد طلبات Anthropic API. انتظر قليلاً ثم حاول مرة أخرى.', 'ai-model'=>'نموذج Claude المحدد غير متاح أو غير صالح. تحقق من ANTHROPIC_DOCUMENT_MODEL.', 'ai-connection'=>'تعذر اتصال النظام بخدمة Anthropic. تحقق من الشبكة وعنوان API ثم حاول مرة أخرى.', 'processing-failed'=>'تعذرت معالجة المستند. تحقق من الملف وإعدادات Claude ثم حاول مرة أخرى.'],
     ],
     'service-errors' => [
         'unauthorized'                   => 'هذا الإجراء غير مصرح به.',
@@ -2068,7 +2068,7 @@ return [
                 'empty-list'             => 'قائمة العملاء الخاصة بك فارغة',
                 'empty-list-description' => 'قم بإنشاء عميل لتنظيم أهدافك.',
                 'create-lead-btn'        => 'إنشاء عميل',
-                'stages' => [
+                'stages'                 => [
                     'need-more-info' => 'معلومات إضافية',
                     'closed-at'      => 'تاريخ الإغلاق',
                     'won-value'      => 'قيمة البيع المؤكد',
@@ -2392,12 +2392,12 @@ return [
     ],
     'layouts' => [
         'document-imports' => 'صندوق المستندات',
-        'app-version' => 'الإصدار: :version',
-        'dashboard'   => 'لوحة التحكم',
-        'leads'       => 'العملاء المحتملون',
-        'quotes'      => 'عروض الأسعار',
-        'quote'       => 'عرض',
-        'mail'        => [
+        'app-version'      => 'الإصدار: :version',
+        'dashboard'        => 'لوحة التحكم',
+        'leads'            => 'العملاء المحتملون',
+        'quotes'           => 'عروض الأسعار',
+        'quote'            => 'عرض',
+        'mail'             => [
             'title'   => 'البريد',
             'compose' => 'إنشاء رسالة',
             'inbox'   => 'البريد الوارد',

@@ -2,6 +2,7 @@
 
 namespace Webkul\Admin\DataGrids\Quote;
 
+use Carbon\Carbon;
 use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 use Webkul\Contact\Repositories\PersonRepository;
@@ -210,8 +211,8 @@ class QuoteDataGrid extends DataGrid
             'searchable' => false,
             'sortable'   => true,
             'filterable' => true,
-            'closure' => fn ($row) => $row->expired_at
-            ? \Carbon\Carbon::parse($row->expired_at)
+            'closure'    => fn ($row) => $row->expired_at
+            ? Carbon::parse($row->expired_at)
                 ->locale(app()->getLocale())
                 ->translatedFormat(app()->getLocale() === 'ar' ? 'd F Y' : 'd M Y')
             : '—',
@@ -225,8 +226,8 @@ class QuoteDataGrid extends DataGrid
             'searchable' => false,
             'sortable'   => true,
             'filterable' => true,
-       'closure' => fn ($row) => $row->created_at
-    ? \Carbon\Carbon::parse($row->created_at)
+            'closure'    => fn ($row) => $row->created_at
+    ? Carbon::parse($row->created_at)
         ->locale(app()->getLocale())
         ->translatedFormat(app()->getLocale() === 'ar' ? 'd F Y - h:i A' : 'd M Y - h:i A')
     : '—',
