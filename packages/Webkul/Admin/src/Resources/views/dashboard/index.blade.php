@@ -107,6 +107,7 @@
                 <x-admin::flat-picker.date
                     class="!w-[140px]"
                     ::allow-input="false"
+                    min-date=""
                     ::max-date="filters.end"
                 >
                     <input
@@ -119,6 +120,7 @@
                 <x-admin::flat-picker.date
                     class="!w-[140px]"
                     ::allow-input="false"
+                    min-date=""
                     ::max-date="filters.end"
                 >
                     <input

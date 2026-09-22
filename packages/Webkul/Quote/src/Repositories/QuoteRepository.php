@@ -165,6 +165,12 @@ class QuoteRepository extends Repository
 
     protected function prepareProposalData(array $data, $quote = null): array
     {
+        if (array_key_exists('event_at', $data)
+            && (blank($data['event_at']) || str_starts_with((string) $data['event_at'], '0000-00-00'))
+        ) {
+            $data['event_at'] = null;
+        }
+
         $settings = ProposalSetting::query()->first();
         $issuedAt = $data['issued_at'] ?? $quote?->issued_at ?? now()->toDateString();
 

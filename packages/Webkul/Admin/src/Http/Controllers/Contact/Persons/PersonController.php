@@ -14,6 +14,7 @@ use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Admin\Http\Requests\AttributeForm;
 use Webkul\Admin\Http\Requests\MassDestroyRequest;
 use Webkul\Admin\Http\Resources\PersonResource;
+use Webkul\Contact\Models\Person;
 use Webkul\Contact\Repositories\PersonRepository;
 
 class PersonController extends Controller
@@ -119,6 +120,31 @@ class PersonController extends Controller
      */
     public function search(): JsonResource
     {
+        if (request()->boolean('paginate')) {
+            $term = trim((string) request()->input('query'));
+            $perPage = min(max(request()->integer('per_page', 10), 1), 50);
+
+            $persons = Person::query()
+                ->with('organization')
+                ->when($userIds = bouncer()->getAuthorizedUserIds(), fn ($query) => $query->whereIn('user_id', $userIds))
+                ->when($term !== '', function ($query) use ($term) {
+                    $like = '%'.addcslashes($term, '%_\\').'%';
+
+                    $query->where(function ($query) use ($like) {
+                        $query
+                            ->where('name', 'like', $like)
+                            ->orWhere('emails', 'like', $like)
+                            ->orWhere('contact_numbers', 'like', $like)
+                            ->orWhereHas('organization', fn ($query) => $query->where('name', 'like', $like));
+                    });
+                })
+                ->orderBy('name')
+                ->orderBy('id')
+                ->paginate($perPage);
+
+            return PersonResource::collection($persons);
+        }
+
         if ($userIds = bouncer()->getAuthorizedUserIds()) {
             $persons = $this->personRepository
                 ->pushCriteria(app(RequestCriteria::class))

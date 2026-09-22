@@ -74,6 +74,18 @@ class Quote extends Model implements QuoteContract
     ];
 
     /**
+     * Treat legacy MySQL zero dates as an unconfirmed event date.
+     */
+    public function getEventAtAttribute($value)
+    {
+        if (blank($value) || str_starts_with((string) $value, '0000-00-00')) {
+            return null;
+        }
+
+        return $this->asDateTime($value);
+    }
+
+    /**
      * Get the quote items record associated with the quote.
      */
     public function items()

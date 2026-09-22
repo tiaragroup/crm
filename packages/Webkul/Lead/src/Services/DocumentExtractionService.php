@@ -20,7 +20,7 @@ class DocumentExtractionService
             'pdf'                => $this->extractPdf($absolutePath),
             'docx'               => $this->extractWord($absolutePath),
             'xlsx', 'xls', 'csv' => $this->extractSpreadsheet($absolutePath, $extension),
-            default              => throw new InvalidArgumentException('Unsupported document type.'),
+            default              => throw new InvalidArgumentException(trans('admin::app.service-errors.unsupported-document')),
         };
     }
 
@@ -30,7 +30,7 @@ class DocumentExtractionService
 
         return ['type' => 'pdf', 'text' => $text, 'tables' => [], 'metadata' => [
             'possibly_scanned' => mb_strlen($text) < 40,
-            'warning'          => mb_strlen($text) < 40 ? 'This PDF may be scanned or image-only. OCR is not available in version 1.' : null,
+            'warning'          => mb_strlen($text) < 40 ? trans('admin::app.service-errors.scanned-pdf') : null,
         ]];
     }
 
@@ -108,10 +108,10 @@ class DocumentExtractionService
 
         $dataRows = collect($tables)->sum(fn ($table) => count($table['rows']));
         if ($dataRows > $max) {
-            throw new InvalidArgumentException("Spreadsheet exceeds the {$max}-row import limit.");
+            throw new InvalidArgumentException(trans('admin::app.service-errors.spreadsheet-limit', ['count' => $max]));
         }
         if ($dataRows === 0) {
-            throw new InvalidArgumentException('The spreadsheet does not contain any data rows.');
+            throw new InvalidArgumentException(trans('admin::app.service-errors.spreadsheet-empty'));
         }
 
         return ['type' => $extension, 'text' => '', 'tables' => $tables, 'metadata' => ['mode_hint' => $dataRows > 1 ? 'bulk' : 'single', 'row_count' => $dataRows]];

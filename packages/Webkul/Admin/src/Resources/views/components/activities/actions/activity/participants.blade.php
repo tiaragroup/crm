@@ -8,10 +8,14 @@
 @pushOnce('scripts')
     <script type="text/x-template" id="v-activity-participants-template">
         <!-- Search Button -->
-        <div class="relative">
+        <div
+            class="relative"
+            ref="participantsLookup"
+        >
             <div 
                 class="relative rounded border border-gray-200 px-2 py-1 hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:hover:border-gray-400" 
                 role="button"
+                @click="openDropdown"
             >
                 <ul class="flex flex-wrap items-center gap-1">
                     <template v-for="userType in ['users', 'persons']">
@@ -34,7 +38,7 @@
 
                             <span
                                 class="icon-cross-large cursor-pointer p-0.5 text-xl"
-                                @click="remove(userType, user)"
+                                @click.stop="remove(userType, user)"
                             ></span>
 
                             {!! view_render_event('admin.components.activities.actions.activity.participants.user_type.user.after') !!}
@@ -52,6 +56,8 @@
                             placeholder="@lang('admin::app.components.activities.actions.activity.participants.placeholder')"
                             v-model.lazy="searchTerm"
                             v-debounce="500"
+                            @focus="openDropdown"
+                            @keydown.esc="closeDropdown"
                         />
 
                         {!! view_render_event('admin.components.activities.actions.activity.participants.search_term.after') !!}
@@ -62,7 +68,7 @@
                     <template v-if="! isSearching.users && ! isSearching.persons">
                         <span
                             class="absolute right-1.5 top-1.5 text-2xl"
-                            :class="[searchTerm.length >= 2 ? 'icon-up-arrow' : 'icon-down-arrow']"
+                            :class="[isDropdownOpen ? 'icon-up-arrow' : 'icon-down-arrow']"
                         ></span>
                     </template>
 
@@ -77,7 +83,7 @@
             <!-- Search Dropdown -->
             <div
                 class="absolute z-10 w-full rounded bg-white shadow-[0px_10px_20px_0px_#0000001F] dark:bg-gray-900"
-                v-if="searchTerm.length >= 2"
+                v-if="isDropdownOpen"
             >
                 <ul class="flex flex-col gap-1 p-2">
                     <!-- Users -->
@@ -114,7 +120,7 @@
                             <li
                                 class="cursor-pointer rounded-sm px-3 py-2 text-sm text-gray-800 hover:bg-gray-100 dark:text-white dark:hover:bg-gray-950"
                                 v-for="user in searchedParticipants[userType]"
-                                @click="add(userType, user)"
+                                @click.stop="add(userType, user)"
                             >
                                 @{{ user.name }}
                             </li>
@@ -154,6 +160,8 @@
 
                     searchTerm: '',
 
+                    isDropdownOpen: false,
+
                     addedParticipants: {
                         users: [],
                         
@@ -176,6 +184,10 @@
 
             watch: {
                 searchTerm(newVal, oldVal) {
+                    if (! this.isDropdownOpen) {
+                        return;
+                    }
+
                     this.search('users');
                     
                     this.search('persons');
@@ -184,27 +196,29 @@
 
             mounted() {
                 this.addedParticipants = this.participants;
+
+                window.addEventListener('click', this.handleClickOutside);
+            },
+
+            beforeUnmount() {
+                window.removeEventListener('click', this.handleClickOutside);
             },
 
             methods: {
                 search(userType) {
-                    if (this.searchTerm.length <= 1) {
-                        this.searchedParticipants[userType] = [];
-
-                        this.isSearching[userType] = false;
-
-                        return;
-                    }
-
                     this.isSearching[userType] = true;
 
                     let self = this;
+
+                    const params = {};
+
+                    if (this.searchTerm.trim()) {
+                        params.search = 'name:' + this.searchTerm.trim();
+                        params.searchFields = 'name:like';
+                    }
                     
                     this.$axios.get(this.searchEnpoints[userType], {
-                            params: {
-                                search: 'name:' + this.searchTerm,
-                                searchFields: 'name:like',
-                            }
+                            params
                         })
                         .then (function(response) {
                             self.addedParticipants[userType].forEach(function(addedParticipant) {
@@ -232,12 +246,35 @@
                         
                         persons: [],
                     };
+
+                    this.closeDropdown();
                 },
 
                 remove(userType, participant) {
                     this.addedParticipants[userType] = this.addedParticipants[userType].filter(function(addedParticipant) {
                         return addedParticipant.id !== participant.id;
                     });
+                },
+
+                openDropdown() {
+                    if (this.isDropdownOpen) {
+                        return;
+                    }
+
+                    this.isDropdownOpen = true;
+
+                    this.search('users');
+                    this.search('persons');
+                },
+
+                closeDropdown() {
+                    this.isDropdownOpen = false;
+                },
+
+                handleClickOutside(event) {
+                    if (! this.$refs.participantsLookup?.contains(event.target)) {
+                        this.closeDropdown();
+                    }
                 },
             },
         });

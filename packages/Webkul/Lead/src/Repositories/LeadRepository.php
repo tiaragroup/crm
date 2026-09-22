@@ -20,14 +20,18 @@ class LeadRepository extends Repository
      */
     protected $fieldSearchable = [
         'title',
+        'description',
         'lead_value',
         'status',
         'user_id',
         'user.name',
         'person_id',
         'person.name',
+        'person.organization.name',
         'lead_source_id',
+        'source.name',
         'lead_type_id',
+        'type.name',
         'lead_pipeline_id',
         'lead_pipeline_stage_id',
         'created_at',

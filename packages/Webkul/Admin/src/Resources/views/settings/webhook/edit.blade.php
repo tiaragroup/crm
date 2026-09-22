@@ -302,8 +302,8 @@
                                     name="name"
                                     rules="required"
                                     :value="old('admin::app.settings.webhooks.edit.name') ?? $webhook->name"
-                                    :label="trans('Admin::app.settings.webhooks.edit.name')"
-                                    :placeholder="trans('Admin::app.settings.webhooks.edit.name')"
+                                    :label="trans('admin::app.settings.webhooks.edit.name')"
+                                    :placeholder="trans('admin::app.settings.webhooks.edit.name')"
                                 />
 
                                 <x-admin::form.control-group.error control-name="name" />
@@ -383,7 +383,7 @@
                                 v-model="field.key"
                                 rules="required"
                                 :label="trans('Key')"
-                                :placeholder="trans('Key')"
+                                :placeholder="trans('admin::app.custom-ui.key')"
                             />
                             <x-admin::form.control-group.error ::name="`${name}[${index}][key]`" />
                         </div>
@@ -396,7 +396,7 @@
                                 v-model="field.value"
                                 rules="required"
                                 :label="trans('Value')"
-                                :placeholder="trans('Value')"
+                                :placeholder="trans('admin::app.custom-ui.value')"
                             />
                             <x-admin::form.control-group.error ::name="`${name}[${index}][value]`" />
                         </div>

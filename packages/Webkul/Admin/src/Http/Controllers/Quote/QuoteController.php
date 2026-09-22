@@ -338,7 +338,7 @@ class QuoteController extends Controller
     {
         $locale = request()->query('locale', 'en');
 
-        abort_unless(in_array($locale, ['en', 'ar'], true), 422, 'Unsupported proposal language.');
+        abort_unless(in_array($locale, ['en', 'ar'], true), 422, trans('admin::app.service-errors.unsupported-proposal-language'));
 
         $quote = $this->quoteRepository->with([
             'items',

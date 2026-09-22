@@ -71,8 +71,8 @@ class ActivityController extends Controller
         $this->validate(request(), [
             'type'          => 'required',
             'comment'       => 'required_if:type,note',
-            'schedule_from' => 'required_unless:type,note,file',
-            'schedule_to'   => 'required_unless:type,note,file',
+            'schedule_from' => 'required_unless:type,note,file|nullable|date|after_or_equal:now',
+            'schedule_to'   => 'required_unless:type,note,file|nullable|date|after_or_equal:schedule_from',
             'file'          => 'required_if:type,file',
         ]);
 
@@ -140,6 +140,13 @@ class ActivityController extends Controller
      */
     public function update($id): RedirectResponse|JsonResponse
     {
+        if (request()->hasAny(['schedule_from', 'schedule_to'])) {
+            $this->validate(request(), [
+                'schedule_from' => 'required|date|after_or_equal:now',
+                'schedule_to'   => 'required|date|after_or_equal:schedule_from',
+            ]);
+        }
+
         Event::dispatch('activity.update.before', $id);
 
         $data = request()->all();

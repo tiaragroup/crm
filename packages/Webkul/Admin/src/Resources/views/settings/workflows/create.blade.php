@@ -423,6 +423,7 @@
                             <x-admin::flat-picker.date
                                 class="!w-1/3"
                                 ::allow-input="false"
+                                min-date=""
                             >
                                 <input
                                     type="date"
@@ -438,6 +439,7 @@
                             <x-admin::flat-picker.date
                                 class="!w-1/3"
                                 ::allow-input="false"
+                                min-date=""
                             >
                                 <input
                                     type="datetime"
@@ -661,6 +663,7 @@
                                     <x-admin::flat-picker.date
                                         class="!w-full"
                                         ::allow-input="false"
+                                        min-date=""
                                     >
                                         <input
                                             type="date"
@@ -676,6 +679,7 @@
                                     <x-admin::flat-picker.date
                                         class="!w-full"
                                         ::allow-input="false"
+                                        min-date=""
                                     >
                                         <input
                                             type="datetime"

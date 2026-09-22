@@ -10,7 +10,7 @@ class DocumentAIService
     public function analyze(array $document): array
     {
         if (! config('document_imports.api_key')) {
-            throw new RuntimeException('The document AI service is not configured.');
+            throw new RuntimeException(trans('admin::app.service-errors.ai-not-configured'));
         }
 
         $content = json_encode($document, JSON_UNESCAPED_UNICODE | JSON_INVALID_UTF8_SUBSTITUTE);
@@ -37,7 +37,7 @@ class DocumentAIService
         }
 
         if ($response->json('stop_reason') === 'max_tokens') {
-            throw new RuntimeException('The document AI response was truncated. Increase the Claude output token limit.');
+            throw new RuntimeException(trans('admin::app.service-errors.ai-truncated'));
         }
 
         $text = collect($response->json('content', []))
@@ -48,7 +48,7 @@ class DocumentAIService
         $data = $this->decodeJsonResponse($text);
 
         if (! is_array($data)) {
-            throw new RuntimeException('The document AI service returned invalid structured data.');
+            throw new RuntimeException(trans('admin::app.service-errors.ai-invalid-data'));
         }
 
         return $this->validate($data);
@@ -84,11 +84,11 @@ class DocumentAIService
     {
         $mode = $data['mode'] ?? 'single';
         if (! in_array($mode, ['single', 'bulk'], true)) {
-            throw new RuntimeException('Invalid AI extraction mode.');
+            throw new RuntimeException(trans('admin::app.service-errors.ai-invalid-mode'));
         }
         if ($mode === 'bulk') {
             if (! isset($data['rows']) || ! is_array($data['rows']) || count($data['rows']) > config('document_imports.max_rows')) {
-                throw new RuntimeException('Invalid or oversized bulk AI response.');
+                throw new RuntimeException(trans('admin::app.service-errors.ai-invalid-bulk'));
             }
 
             return ['mode' => 'bulk', 'rows' => array_map(fn ($row) => $this->normalizeRecord($row), $data['rows'])];
@@ -101,13 +101,13 @@ class DocumentAIService
     {
         foreach (['company', 'contact', 'event'] as $key) {
             if (isset($data[$key]) && ! is_array($data[$key])) {
-                throw new RuntimeException("Invalid AI {$key} shape.");
+                throw new RuntimeException(trans('admin::app.service-errors.ai-invalid-shape', ['section' => $key]));
             }
         }
         $confidence = is_array($data['confidence'] ?? null) ? $data['confidence'] : [];
         foreach ($confidence as $value) {
             if ($value !== null && (! is_numeric($value) || $value < 0 || $value > 1)) {
-                throw new RuntimeException('Invalid AI confidence value.');
+                throw new RuntimeException(trans('admin::app.service-errors.ai-invalid-confidence'));
             }
         }
 

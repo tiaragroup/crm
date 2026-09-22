@@ -4,6 +4,19 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Mail UI Navigation
+    |--------------------------------------------------------------------------
+    |
+    | The mail module remains installed and its routes remain available. This
+    | option only controls whether it is exposed in admin navigation and menu
+    | search surfaces.
+    |
+    */
+
+    'show_in_navigation' => env('MAIL_SHOW_IN_NAVIGATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Default Mailer
     |--------------------------------------------------------------------------
     |

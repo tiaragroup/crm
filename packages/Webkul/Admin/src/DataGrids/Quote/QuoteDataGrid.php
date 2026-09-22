@@ -23,7 +23,7 @@ class QuoteDataGrid extends DataGrid
                 'quotes.proposal_reference',
                 'quotes.status',
                 'quotes.subject',
-                'quotes.event_at',
+                DB::raw("NULLIF({$tablePrefix}quotes.event_at, '0000-00-00 00:00:00') as event_at"),
                 'quotes.guest_count',
                 'quotes.expired_at',
                 'quotes.sub_total',
@@ -72,8 +72,9 @@ class QuoteDataGrid extends DataGrid
     {
         $this->addColumn([
             'index'      => 'proposal_reference',
-            'label'      => 'Proposal Ref.',
+            'label'      => trans('admin::app.custom-ui.proposal-reference'),
             'type'       => 'string',
+            'searchable' => true,
             'filterable' => true,
             'sortable'   => true,
         ]);
@@ -82,17 +83,18 @@ class QuoteDataGrid extends DataGrid
             'index'      => 'subject',
             'label'      => trans('admin::app.quotes.index.datagrid.subject'),
             'type'       => 'string',
+            'searchable' => true,
             'filterable' => true,
             'sortable'   => true,
         ]);
 
         $this->addColumn([
             'index'      => 'event_at',
-            'label'      => 'Event Date',
+            'label'      => trans('admin::app.custom-ui.event-date'),
             'type'       => 'date',
             'sortable'   => true,
             'filterable' => true,
-           'closure' => fn ($row) => $row->event_at
+            'closure' => fn ($row) => $row->event_at
             ? \Carbon\Carbon::parse($row->event_at)
                 ->locale(app()->getLocale())
                 ->translatedFormat(app()->getLocale() === 'ar' ? 'd F Y' : 'd M Y')
@@ -101,7 +103,7 @@ class QuoteDataGrid extends DataGrid
 
         $this->addColumn([
             'index'      => 'guest_count',
-            'label'      => 'Guests',
+            'label'      => trans('admin::app.custom-ui.guests'),
             'type'       => 'integer',
             'sortable'   => true,
             'filterable' => true,
@@ -109,8 +111,9 @@ class QuoteDataGrid extends DataGrid
 
         $this->addColumn([
             'index'      => 'status',
-            'label'      => 'Status',
+            'label'      => trans('admin::app.custom-ui.status'),
             'type'       => 'string',
+            'searchable' => true,
             'sortable'   => true,
             'filterable' => true,
             'closure'    => fn ($row) => ucfirst($row->status),
@@ -120,6 +123,7 @@ class QuoteDataGrid extends DataGrid
             'index'              => 'sales_person',
             'label'              => trans('admin::app.quotes.index.datagrid.sales-person'),
             'type'               => 'string',
+            'searchable'         => true,
             'sortable'           => true,
             'filterable'         => true,
             'filterable_type'    => 'searchable_dropdown',
@@ -136,6 +140,7 @@ class QuoteDataGrid extends DataGrid
             'index'              => 'person_name',
             'label'              => trans('admin::app.quotes.index.datagrid.person'),
             'type'               => 'string',
+            'searchable'         => true,
             'sortable'           => true,
             'filterable'         => true,
             'filterable_type'    => 'searchable_dropdown',
@@ -255,7 +260,7 @@ class QuoteDataGrid extends DataGrid
             $this->addAction([
                 'index'  => 'word',
                 'icon'   => 'icon-download',
-                'title'  => 'Download Word',
+                'title'  => trans('admin::app.custom-ui.download-word'),
                 'method' => 'GET',
                 'url'    => fn ($row) => route('admin.quotes.word', $row->id),
             ]);

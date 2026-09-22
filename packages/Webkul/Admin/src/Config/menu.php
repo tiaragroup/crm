@@ -45,7 +45,7 @@ return [
     /**
      * Emails.
      */
-    [
+    ...(config('mail.show_in_navigation') ? [[
         'key'        => 'mail',
         'name'       => 'admin::app.layouts.mail.title',
         'route'      => 'admin.mail.index',
@@ -87,7 +87,7 @@ return [
         'params'     => ['route' => 'trash'],
         'sort'       => 5,
         'icon-class' => '',
-    ],
+    ]] : []),
     // , [
     //     'key'        => 'mail.setting',
     //     'name'       => 'admin::app.layouts.mail.setting',

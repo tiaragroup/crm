@@ -5,7 +5,7 @@
     $eventAt = old('event_at', optional($quote->event_at)->format('Y-m-d\TH:i'));
     $defaultItems = $quote->exists
         ? $quote->items->map(fn ($item) => ['key' => (string) $item->id, 'product_id' => (int) $item->product_id > 0 ? (int) $item->product_id : null, 'name' => $item->name, 'description' => $item->description, 'pricing_type' => $item->pricing_type, 'price' => (float) $item->price, 'quantity' => (int) $item->quantity, 'guest_count' => (int) ($item->guest_count ?: $quote->guest_count), 'discount_amount' => (float) $item->discount_amount])->values()
-        : collect([['key' => 'item_1', 'product_id' => null, 'name' => 'Catering Package', 'description' => '', 'pricing_type' => 'per_person', 'price' => 0, 'quantity' => 1, 'guest_count' => 150, 'discount_amount' => 0]]);
+        : collect([['key' => 'item_1', 'product_id' => null, 'name' => trans('admin::app.quotes.form.default-package'), 'description' => '', 'pricing_type' => 'per_person', 'price' => 0, 'quantity' => 1, 'guest_count' => 150, 'discount_amount' => 0]]);
     $defaultSections = $quote->exists
         ? $quote->menuSections->map(fn ($section) => ['name' => $section->name, 'catering_menu_category_id' => (int) $section->catering_menu_category_id > 0 ? (int) $section->catering_menu_category_id : null, 'items' => $section->items->map(fn ($item) => ['product_id' => (int) $item->product_id > 0 ? (int) $item->product_id : null, 'name' => $item->name, 'description' => $item->description])->values()])->values()
         : collect();
@@ -127,11 +127,11 @@
                     <select name="status" class="{{ $inputClass }} !w-36">@foreach (['draft', 'sent', 'accepted', 'rejected', 'expired'] as $status)<option value="{{ $status }}" @selected(old('status', $quote->status ?: 'draft') === $status)>@lang('admin::app.quotes.form.statuses.'.$status)</option>@endforeach</select>
                 </div>
                 <div class="grid grid-cols-2 gap-4 max-md:grid-cols-1">
-                    <div class="col-span-2 max-md:col-span-1"><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.subject') *</label><input name="subject" required value="{{ old('subject', $quote->subject ?: 'Catering Function Proposal') }}" class="{{ $inputClass }}"></div>
+                    <div class="col-span-2 max-md:col-span-1"><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.subject') *</label><input name="subject" required value="{{ old('subject', $quote->subject ?: trans('admin::app.quotes.form.default-subject')) }}" class="{{ $inputClass }}"></div>
                     <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.reference')</label><input name="proposal_reference" value="{{ old('proposal_reference', $quote->proposal_reference) }}" placeholder="@lang('admin::app.quotes.form.reference-placeholder')" class="{{ $inputClass }}"></div>
                     <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.sales-owner') *</label><select name="user_id" required class="{{ $inputClass }}"><option value="">@lang('admin::app.quotes.form.select-sales-owner')</option>@foreach ($users as $user)<option value="{{ $user->id }}" @selected((int) old('user_id', $quote->user_id) === $user->id)>{{ $user->name }}</option>@endforeach</select></div>
-                    <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.issue-date') *</label><input type="date" name="issued_at" required value="{{ $issuedAt }}" class="{{ $inputClass }}"></div>
-                    <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.valid-until') *</label><input type="date" name="expired_at" required value="{{ $validUntil }}" class="{{ $inputClass }}"></div>
+                    <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.issue-date') *</label><input type="date" name="issued_at" required min="{{ now()->toDateString() }}" value="{{ $issuedAt }}" class="{{ $inputClass }}"></div>
+                    <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.valid-until') *</label><input type="date" name="expired_at" required min="{{ now()->toDateString() }}" value="{{ $validUntil }}" class="{{ $inputClass }}"></div>
                     <div class="col-span-2 max-md:col-span-1">
                         <label class="{{ $labelClass }}">@lang('admin::app.quotes.form.crm-contact') *</label>
                         <input type="hidden" name="person_id" :value="selectedContactId" required>
@@ -205,7 +205,7 @@
                         <input type="hidden" name="client_email" :value="selectedContact?.email || ''">
                     </div>
                     <div class="col-span-2 max-md:col-span-1"><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.introduction')</label><textarea name="greeting" rows="4" class="{{ $inputClass }}">{{ old('greeting', $quote->greeting ?: $settings?->greeting_template) }}</textarea></div>
-                    <input type="hidden" name="description" value="{{ old('description', $quote->description ?: 'Catering function proposal') }}">
+                    <input type="hidden" name="description" value="{{ old('description', $quote->description ?: trans('admin::app.quotes.form.default-description')) }}">
                 </div>
             </section>
 
@@ -213,7 +213,7 @@
                 <header class="mb-4 border-b border-gray-200 pb-3 dark:border-gray-800"><h2 class="font-semibold text-gray-800 dark:text-white">@lang('admin::app.quotes.form.event-details')</h2><p class="text-xs text-gray-500">@lang('admin::app.quotes.form.event-details-info')</p></header>
                 <div class="grid grid-cols-2 gap-4 max-md:grid-cols-1">
                     <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.event-type')</label><input name="event_type" value="{{ old('event_type', $quote->event_type) }}" placeholder="@lang('admin::app.quotes.form.event-type-placeholder')" class="{{ $inputClass }}"></div>
-                    <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.event-date-time')</label><input type="datetime-local" name="event_at" value="{{ $eventAt }}" class="{{ $inputClass }}"></div>
+                    <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.event-date-time')</label><input type="datetime-local" name="event_at" min="{{ now()->format('Y-m-d\\TH:i') }}" value="{{ $eventAt }}" class="{{ $inputClass }}"></div>
                     <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.venue')</label><input name="venue" value="{{ old('venue', $quote->venue) }}" class="{{ $inputClass }}"></div>
                     <div><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.guest-count') *</label><input type="number" min="1" name="guest_count" v-model.number="guestCount" required class="{{ $inputClass }}"></div>
                     <div class="col-span-2 max-md:col-span-1"><label class="{{ $labelClass }}">@lang('admin::app.quotes.form.setup-description')</label><textarea name="setup_description" v-model="setupDescription" rows="3" class="{{ $inputClass }}"></textarea></div>
@@ -231,7 +231,7 @@
                     <div class="flex items-center gap-2">
                         <input v-model="section.name" :name="`menu_sections[${sectionIndex}][name]`" required placeholder="@lang('admin::app.quotes.form.menu-section-placeholder')" class="{{ $inputClass }} font-semibold">
                         <input type="hidden" :name="`menu_sections[${sectionIndex}][catering_menu_category_id]`" :value="section.catering_menu_category_id">
-                        <button type="button" class="secondary-button whitespace-nowrap" @click="section._expanded = !section._expanded">@{{ section._expanded ? 'Collapse' : `Edit ${section.items.length} dishes` }}</button>
+                        <button type="button" class="secondary-button whitespace-nowrap" @click="section._expanded = !section._expanded" v-text="section._expanded ? translations.collapse : translations.editDishes.replace(':count', section.items.length)"></button>
                         <button type="button" class="px-2 text-sm font-medium text-red-600" @click="menuSections.splice(sectionIndex, 1)">@lang('admin::app.quotes.form.remove')</button>
                     </div>
                     <div v-show="section._expanded" class="mt-3 border-t border-gray-100 pt-3 dark:border-gray-800">
@@ -310,6 +310,12 @@
 
             return {
                 isArabic: @json(app()->isLocale('ar')),
+                translations: {
+                    collapse: @json(trans('admin::app.quotes.form.collapse')),
+                    editDishes: @json(trans('admin::app.quotes.form.edit-dishes')),
+                    menu: @json(trans('admin::app.quotes.form.menu')),
+                    unnamedDish: @json(trans('admin::app.quotes.form.unnamed-dish')),
+                },
                 selectedContactId: this.initial.contactId || '',
                 contactOptions,
                 contactSearch: selectedContact ? [selectedContact.name, selectedContact.company, selectedContact.mobile].filter(Boolean).join(' — ') : '',
@@ -411,8 +417,9 @@
             },
             money(value) { return Number(value || 0).toLocaleString(this.isArabic ? 'ar-SA' : 'en-SA', {minimumFractionDigits: 2, maximumFractionDigits: 2}); },
             localizedName(item) { return this.isArabic ? (item.name_ar || item.name) : item.name; },
+            localizedDescription(item) { return this.isArabic ? (item.description_ar || item.description) : item.description; },
             lineTotal(item) { if (item.pricing_type === 'included') return 0; return Number(item.price || 0) * (item.pricing_type === 'per_person' ? Number(item.guest_count || this.guestCount || 0) : Number(item.quantity || 1)); },
-            applyPackage() { const pkg = this.packages.find(item => Number(item.id) === Number(this.selectedPackage)); if (!pkg) return; const grouped = {}; (pkg.items || []).forEach(link => { const product = link.product; if (!product) return; const category = product.catering_menu_category || {id:null,name:'Menu'}; grouped[category.name] ||= {name:category.name,catering_menu_category_id:category.id,items:[]}; grouped[category.name].items.push({product_id:product.id,name:product.name || 'Unnamed dish',description:product.description || ''}); }); this.menuSections = Object.values(grouped).map((section, index) => ({...section,_key:`section_${Date.now()}_${index}`,_expanded:false,selectedProduct:''})); this.setupDescription = pkg.setup_description || ''; this.serviceInclusions = pkg.service_inclusions || ''; this.items = [{key:`item_${Date.now()}`,product_id:null,name:pkg.name,description:pkg.description || '',pricing_type:'per_person',price:Number(pkg.price_per_person),quantity:1,guest_count:this.guestCount,discount_amount:0}]; },
+            applyPackage() { const pkg = this.packages.find(item => Number(item.id) === Number(this.selectedPackage)); if (!pkg) return; const grouped = {}; (pkg.items || []).forEach(link => { const product = link.product; if (!product) return; const category = product.catering_menu_category || {id:null,name:this.translations.menu}; const categoryName = this.localizedName(category) || this.translations.menu; grouped[categoryName] ||= {name:categoryName,catering_menu_category_id:category.id,items:[]}; grouped[categoryName].items.push({product_id:product.id,name:this.localizedName(product) || this.translations.unnamedDish,description:this.localizedDescription(product) || ''}); }); this.menuSections = Object.values(grouped).map((section, index) => ({...section,_key:`section_${Date.now()}_${index}`,_expanded:false,selectedProduct:''})); this.setupDescription = (this.isArabic ? pkg.setup_description_ar : pkg.setup_description) || pkg.setup_description || ''; this.serviceInclusions = (this.isArabic ? pkg.service_inclusions_ar : pkg.service_inclusions) || pkg.service_inclusions || ''; this.items = [{key:`item_${Date.now()}`,product_id:null,name:this.localizedName(pkg),description:this.localizedDescription(pkg) || '',pricing_type:'per_person',price:Number(pkg.price_per_person),quantity:1,guest_count:this.guestCount,discount_amount:0}]; },
             addSection() { this.menuSections.push({_key:`section_${Date.now()}`,name:'',catering_menu_category_id:null,_expanded:true,selectedProduct:'',items:[]}); },
             productsFor(section) { const category = this.categories.find(item => Number(item.id) === Number(section.catering_menu_category_id)); return category?.products || this.categories.flatMap(item => item.products || []); },
             addCatalogProduct(section) { const product = this.categories.flatMap(item => item.products || []).find(item => Number(item.id) === Number(section.selectedProduct)); if (!product) return; section.items.push({product_id:product.id,name:product.name,description:product.description || ''}); section.selectedProduct = ''; },

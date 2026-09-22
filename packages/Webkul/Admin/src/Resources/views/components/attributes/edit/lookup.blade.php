@@ -213,9 +213,7 @@
             },
 
             mounted() {
-                if (this.value) {
-                    this.getLookUpEntity();
-                }
+                this.syncSelectedItem(this.value);
 
                 window.addEventListener('click', this.handleFocusOut);
             },
@@ -229,6 +227,14 @@
             },
 
             watch: {
+                value: {
+                    deep: true,
+
+                    handler(value) {
+                        this.syncSelectedItem(value);
+                    },
+                },
+
                 searchTerm() {
                     if (this.ignoreNextSearch) {
                         this.ignoreNextSearch = false;
@@ -254,6 +260,32 @@
             },
 
             methods: {
+                syncSelectedItem(value) {
+                    if (! value) {
+                        this.selectedItem = {
+                            id: '',
+                            name: ''
+                        };
+
+                        return;
+                    }
+
+                    if (
+                        typeof value === 'object'
+                        && value.id
+                        && value.name !== undefined
+                    ) {
+                        this.selectedItem = {
+                            ...value,
+                            name: value.name ?? '',
+                        };
+
+                        return;
+                    }
+
+                    this.getLookUpEntity(value);
+                },
+
                 toggle() {
                     if (this.isDisabled) {
                         this.showPopup = false;
@@ -354,9 +386,17 @@
                     }
                 },
 
-                getLookUpEntity() {
+                getLookUpEntity(value = this.value) {
+                    const entityId = typeof value === 'object'
+                        ? value?.id
+                        : value;
+
+                    if (! entityId) {
+                        return;
+                    }
+
                     this.$axios.get(this.lookupEntityRoute, {
-                            params: { query: this.value?.id ?? ""}
+                            params: { query: entityId }
                         })
                         .then (response => {
                             this.selectedItem = Object.keys(response.data).length

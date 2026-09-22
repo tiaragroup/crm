@@ -208,7 +208,9 @@ class LeadController extends Controller
      */
     public function edit(int $id): View
     {
-        $lead = $this->leadRepository->findOrFail($id);
+        $lead = $this->leadRepository
+            ->with('person.organization')
+            ->findOrFail($id);
 
         return view('admin::leads.edit', array_merge(
             compact('lead'),

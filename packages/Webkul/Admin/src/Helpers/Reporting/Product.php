@@ -24,37 +24,76 @@ class Product extends AbstractReporting
      *
      * @param  int  $limit
      */
-    public function getTopSellingProductsByRevenue($limit = null): Collection
-    {
-        $tablePrefix = DB::getTablePrefix();
+   public function getTopSellingProductsByRevenue($limit = null): Collection
+{
+    $items = DB::table('quote_menu_items as quote_menu_items')
+        ->join(
+            'quote_menu_sections as quote_menu_sections',
+            'quote_menu_sections.id',
+            '=',
+            'quote_menu_items.quote_menu_section_id'
+        )
+        ->join(
+            'quotes as quotes',
+            'quotes.id',
+            '=',
+            'quote_menu_sections.quote_id'
+        )
+        ->leftJoin(
+            'products as products',
+            'products.id',
+            '=',
+            'quote_menu_items.product_id'
+        )
+        ->whereNotNull('quote_menu_items.product_id')
+        ->whereBetween('quotes.created_at', [
+            $this->startDate,
+            $this->endDate,
+        ])
+        ->select([
+            'products.id',
+            'products.name',
+            'products.name_ar',
+            'products.price',
+        ])
+        ->selectRaw(
+            'COUNT(DISTINCT quotes.id) as proposal_count'
+        )
+        ->selectRaw(
+            'SUM(COALESCE(quotes.guest_count, 0)) as guest_count'
+        )
+        ->groupBy(
+            'products.id',
+            'products.name',
+            'products.name_ar',
+            'products.price'
+        )
+        ->orderByDesc('proposal_count')
+        ->orderByDesc('guest_count')
+        ->limit($limit)
+        ->get();
 
-        $items = $this->productRepository
-            ->resetModel()
-            ->with('product')
-            ->leftJoin('leads', 'lead_products.lead_id', '=', 'leads.id')
-            ->leftJoin('products', 'lead_products.product_id', '=', 'products.id')
-            ->select('*')
-            ->addSelect(DB::raw('SUM('.$tablePrefix.'lead_products.amount) as revenue'))
-            ->whereBetween('leads.closed_at', [$this->startDate, $this->endDate])
-            ->having(DB::raw('SUM('.$tablePrefix.'lead_products.amount)'), '>', 0)
-            ->groupBy('product_id')
-            ->orderBy('revenue', 'DESC')
-            ->limit($limit)
-            ->get();
+    return $items->map(function ($item) {
+        return [
+            'id'              => $item->id,
 
-        $items = $items->map(function ($item) {
-            return [
-                'id'                => $item->product_id,
-                'name'              => $item->name,
-                'price'             => $item->product?->price,
-                'formatted_price'   => core()->formatBasePrice($item->price),
-                'revenue'           => $item->revenue,
-                'formatted_revenue' => core()->formatBasePrice($item->revenue),
-            ];
-        });
+            'name'            => app()->getLocale() === 'ar'
+                && ! empty($item->name_ar)
+                    ? $item->name_ar
+                    : $item->name,
 
-        return $items;
-    }
+            'price'           => $item->price,
+
+            'formatted_price' => core()->formatBasePrice(
+                $item->price
+            ),
+
+            'proposal_count'  => (int) $item->proposal_count,
+
+            'guest_count'     => (int) $item->guest_count,
+        ];
+    });
+}
 
     /**
      * Gets top-selling products by quantity.

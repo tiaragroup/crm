@@ -55,7 +55,7 @@ class Bouncer
     public function isPermissionsEmpty()
     {
         if (! $role = auth()->guard('user')->user()->role) {
-            abort(401, 'This action is unauthorized.');
+            abort(401, trans('admin::app.service-errors.unauthorized'));
         }
 
         if ($role->permission_type === 'all') {

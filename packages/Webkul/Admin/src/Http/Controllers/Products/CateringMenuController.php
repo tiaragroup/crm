@@ -38,7 +38,7 @@ class CateringMenuController extends Controller
             $this->replaceItems($menu, $data['product_ids']);
         });
 
-        session()->flash('success', 'Catering menu created successfully.');
+        session()->flash('success', trans('admin::app.catering-menus.create-success'));
 
         return redirect()->route('admin.catering.menus.index');
     }
@@ -59,7 +59,7 @@ class CateringMenuController extends Controller
             $this->replaceItems($menu, $data['product_ids']);
         });
 
-        session()->flash('success', 'Catering menu updated successfully.');
+        session()->flash('success', trans('admin::app.catering-menus.update-success'));
 
         return redirect()->route('admin.catering.menus.index');
     }
@@ -68,7 +68,7 @@ class CateringMenuController extends Controller
     {
         $menu->delete();
 
-        session()->flash('success', 'Catering menu deleted successfully.');
+        session()->flash('success', trans('admin::app.catering-menus.delete-success'));
 
         return redirect()->route('admin.catering.menus.index');
     }

@@ -54,7 +54,7 @@
                     return {
                         allowInput: this.allowInput ?? true,
                         disable: this.disable ?? [],
-                        minDate: this.minDate ?? '',
+                        minDate: this.minDate !== undefined ? this.minDate : 'today',
                         maxDate: this.maxDate ?? '',
                         altFormat: "Y-m-d",
                         dateFormat: "Y-m-d",

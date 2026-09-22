@@ -251,7 +251,7 @@
                                                         >
                                                         </p>
 
-                                                        <x-admin::flat-picker.date ::allow-input="false">
+                                                        <x-admin::flat-picker.date ::allow-input="false" min-date="">
                                                             <input
                                                                 type="date"
                                                                 :name="`${column.index}[from]`"
@@ -267,7 +267,7 @@
                                                             />
                                                         </x-admin::flat-picker.date>
 
-                                                        <x-admin::flat-picker.date ::allow-input="false">
+                                                        <x-admin::flat-picker.date ::allow-input="false" min-date="">
                                                             <input
                                                                 type="date"
                                                                 :name="`${column.index}[to]`"
@@ -325,7 +325,7 @@
                                                     </div>
 
                                                     <div class="mt-1.5 grid gap-1.5">
-                                                        <x-admin::flat-picker.date ::allow-input="false">
+                                                        <x-admin::flat-picker.date ::allow-input="false" min-date="">
                                                             <input
                                                                 type="date"
                                                                 :name="column.index"
@@ -394,7 +394,7 @@
                                                         >
                                                         </p>
 
-                                                        <x-admin::flat-picker.datetime ::allow-input="false">
+                                                        <x-admin::flat-picker.datetime ::allow-input="false" min-date="">
                                                             <input
                                                                 type="datetime-local"
                                                                 :name="`${column.index}[from]`"
@@ -410,7 +410,7 @@
                                                             />
                                                         </x-admin::flat-picker.datetime>
 
-                                                        <x-admin::flat-picker.datetime ::allow-input="false">
+                                                        <x-admin::flat-picker.datetime ::allow-input="false" min-date="">
                                                             <input
                                                                 type="datetime-local"
                                                                 :name="`${column.index}[to]`"
@@ -468,7 +468,7 @@
                                                     </div>
 
                                                     <div class="my-4 grid">
-                                                        <x-admin::flat-picker.datetime ::allow-input="false">
+                                                        <x-admin::flat-picker.datetime ::allow-input="false" min-date="">
                                                             <input
                                                                 type="datetime-local"
                                                                 :name="column.index"

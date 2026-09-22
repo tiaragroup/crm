@@ -73,7 +73,7 @@ class ProductDataGrid extends DataGrid
 
         $this->addColumn([
             'index'      => 'name_ar',
-            'label'      => 'Arabic Name',
+            'label'      => trans('admin::app.custom-ui.arabic-name'),
             'type'       => 'string',
             'sortable'   => true,
             'searchable' => true,

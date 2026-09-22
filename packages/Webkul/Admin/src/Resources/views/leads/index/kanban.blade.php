@@ -261,9 +261,9 @@
                                     <x-admin::form.control-group.control
                                         type="number"
                                         name="lead_value"
-                                        rules="required|numeric|min_value:0"
+                                        rules="required|decimal:4|min_value:0"
                                         min="0"
-                                        step="0.01"
+                                        step="0.0001"
                                         ::value="finalized.lead.lead_value"
                                         :label="trans('admin::app.leads.index.kanban.stages.won-value')"
                                     />
@@ -435,8 +435,21 @@
                                 return;
                             }
 
-                            params['search'] += `title:${column.value.join(',')};`;
-                            params['searchFields'] += `title:like;`;
+                            const searchValue = column.value.join(',');
+                            const searchFields = [
+                                'title',
+                                'description',
+                                'person.name',
+                                'person.organization.name',
+                                'user.name',
+                                'source.name',
+                                'type.name',
+                            ];
+
+                            searchFields.forEach((field) => {
+                                params['search'] += `${field}:${searchValue};`;
+                                params['searchFields'] += `${field}:like;`;
+                            });
 
                             return;
                         }

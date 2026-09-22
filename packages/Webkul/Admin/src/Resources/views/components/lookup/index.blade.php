@@ -108,7 +108,7 @@
                 </ul>
 
                 <button
-                    v-if="canAddNew"
+                    v-if="canAddNew && searchTerm.trim() && hasSearched && ! isSearching && ! searchFailed && filteredResults.length === 0"
                     type="button"
                     class="flex w-full shrink-0 cursor-pointer items-center justify-center gap-1.5 rounded-md border border-brandColor px-3 py-2 text-sm font-semibold text-brandColor transition-colors hover:bg-brandColor hover:text-white"
                     @click.stop="selectItem({ id: '', name: searchTerm.trim() })"
@@ -203,6 +203,10 @@
                     requestSequence: 0,
 
                     ignoreNextSearch: false,
+
+                    hasSearched: false,
+
+                    searchFailed: false,
                 };
             },
 
@@ -307,6 +311,8 @@
                         this.hasMore = true;
                         this.searchedResults = [];
                         this.isSearching = true;
+                        this.hasSearched = false;
+                        this.searchFailed = false;
 
                         this.cancelToken?.cancel();
                         this.cancelToken = this.$axios.CancelToken.source();
@@ -339,9 +345,15 @@
                                 ? results
                                 : this.mergeResults(this.searchedResults, results);
 
+                            const currentPage = payload.meta?.current_page ?? payload.current_page;
+                            const lastPage = payload.meta?.last_page ?? payload.last_page;
+
                             this.hasMore = Array.isArray(payload)
                                 ? false
-                                : payload.current_page < payload.last_page;
+                                : currentPage < lastPage;
+
+                            this.hasSearched = true;
+                            this.searchFailed = false;
 
                             if (this.hasMore) {
                                 this.page = requestedPage + 1;
@@ -353,6 +365,8 @@
 
                                 if (requestSequence === this.requestSequence) {
                                     this.hasMore = false;
+                                    this.hasSearched = false;
+                                    this.searchFailed = true;
                                 }
                             }
                         })

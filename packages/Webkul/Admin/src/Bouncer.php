@@ -34,7 +34,7 @@ class Bouncer
     public static function allow($permission)
     {
         if (! auth()->guard('user')->check() || ! auth()->guard('user')->user()->hasPermission($permission)) {
-            abort(401, 'This action is unauthorized');
+            abort(401, trans('admin::app.service-errors.unauthorized'));
         }
     }
 

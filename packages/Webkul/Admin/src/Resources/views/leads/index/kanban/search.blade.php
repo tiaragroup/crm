@@ -24,7 +24,8 @@
                 class="block w-full rounded-lg border bg-white py-1.5 leading-6 text-gray-600 transition-all hover:border-gray-400 focus:border-gray-400 dark:border-gray-800 dark:bg-gray-900 dark:text-gray-300 dark:hover:border-gray-400 dark:focus:border-gray-400 ltr:pl-10 ltr:pr-3 rtl:pl-3 rtl:pr-10"
                 placeholder="@lang('admin::app.leads.index.kanban.toolbar.search.title')"
                 autocomplete="off"
-                :value="getSearchedValues()"
+                :value="searchTerm"
+                @input="queueSearch"
                 @keyup.enter="search"
             >
         </div>
@@ -40,57 +41,67 @@
 
             data() {
                 return {
-                    filters: {
-                        columns: [],
-                    },
+                    searchTerm: '',
+
+                    searchTimer: null,
                 };
             },
 
             mounted() {
-                this.filters.columns = this.applied.filters.columns.filter((column) => column.index === 'all');
+                this.searchTerm = this.getSearchedValue();
+            },
+
+            beforeUnmount() {
+                clearTimeout(this.searchTimer);
             },
 
             methods: {
                 /**
                  * Perform a search operation based on the input value.
                  *
-                 * @param {Event} $event
                  * @returns {void}
                  */
-                search($event) {
-                    let requestedValue = $event.target.value;
+                search() {
+                    clearTimeout(this.searchTimer);
 
-                    let appliedColumn = this.filters.columns.find(column => column.index === 'all');
+                    const requestedValue = this.searchTerm.trim();
+                    const filters = {
+                        columns: [],
+                    };
 
-                    if (! requestedValue) {
-                        appliedColumn.value = [];
-
-                        this.$emit('search', this.filters);
-
-                        return;
-                    }
-
-                    if (appliedColumn) {
-                        appliedColumn.value = [requestedValue];
-                    } else {
-                        this.filters.columns.push({
+                    if (requestedValue) {
+                        filters.columns.push({
                             index: 'all',
                             value: [requestedValue]
                         });
                     }
 
-                    this.$emit('search', this.filters);
+                    this.$emit('search', filters);
+                },
+
+                /**
+                 * Queue the search while the user is typing.
+                 *
+                 * @param {Event} $event
+                 * @returns {void}
+                 */
+                queueSearch($event) {
+                    this.searchTerm = $event.target.value;
+
+                    clearTimeout(this.searchTimer);
+
+                    this.searchTimer = setTimeout(() => this.search(), 350);
                 },
 
                 /**
                  * Get the searched values for a specific column.
                  *
-                 * @returns {Array}
+                 * @returns {string}
                  */
-                getSearchedValues() {
-                    let appliedColumn = this.filters.columns.find(column => column.index === 'all');
+                getSearchedValue() {
+                    const appliedColumn = this.applied.filters.columns.find(column => column.index === 'all');
 
-                    return appliedColumn?.value ?? [];
+                    return appliedColumn?.value?.[0] ?? '';
                 },
             },
         });

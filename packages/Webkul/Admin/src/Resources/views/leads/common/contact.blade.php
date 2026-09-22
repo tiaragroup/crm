@@ -18,7 +18,6 @@
             <x-admin::lookup
                 ::src="src"
                 name="person[id]"
-                ::params="params"
                 ::rules="nameValidationRule"
                 :label="trans('admin::app.leads.common.contact.name')"
                 ::value="{id: person.id, name: person.name}"
@@ -91,7 +90,16 @@
                 :value="person.organization"
                 :is-disabled="person?.id ? true : false"
                 can-add-new="true"
+                @lookup-added="setOrganization"
+                @lookup-removed="clearOrganization"
             ></v-lookup-component>
+
+            <x-admin::form.control-group.control
+                v-if="organizationName"
+                type="hidden"
+                name="person[organization_name]"
+                v-model="organizationName"
+            />
         </x-admin::form.control-group>
     </script>
 
@@ -110,20 +118,14 @@
                     },
 
                     persons: [],
+
+                    organizationName: '',
                 }
             },
 
             computed: {
                 src() {
                     return "{{ route('admin.contacts.persons.search') }}";
-                },
-
-                params() {
-                    return {
-                        params: {
-                            query: this.person['name']
-                        }
-                    }
                 },
 
                 nameValidationRule() {
@@ -134,6 +136,18 @@
             methods: {
                 addPerson (person) {
                     this.person = person;
+
+                    this.organizationName = '';
+                },
+
+                setOrganization(organization) {
+                    this.organizationName = organization?.id
+                        ? ''
+                        : organization?.name?.trim() || '';
+                },
+
+                clearOrganization() {
+                    this.organizationName = '';
                 },
             }
         });

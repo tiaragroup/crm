@@ -245,8 +245,8 @@
                     :label="$attribute->name ?? $parentAttribute->name"
                     :placeholder="$attribute->placeholder"
                 >
-                    <option value="1">Yes</option>
-                    <option value="0">No</option>
+                    <option value="1">@lang('admin::app.settings.workflows.create.yes')</option>
+                    <option value="0">@lang('admin::app.settings.workflows.create.no')</option>
                 </x-web_form::form.control-group.control>
 
                 <x-web_form::form.control-group.error :control-name="$fieldName" />

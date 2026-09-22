@@ -114,9 +114,9 @@
                                     <x-admin::form.control-group.control
                                         type="number"
                                         name="lead_value"
-                                        rules="required|numeric|min_value:0"
+                                        rules="required|decimal:4|min_value:0"
                                         min="0"
-                                        step="0.01"
+                                        step="0.0001"
                                         :value="$lead->lead_value"
                                         v-model.number="nextStage.lead_value"
                                         :label="trans('admin::app.leads.view.stages.won-value')"

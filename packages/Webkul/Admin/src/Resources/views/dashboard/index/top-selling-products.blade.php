@@ -46,15 +46,15 @@
                             >
                             </p>
 
-                            <div class="flex justify-between">
-                                <p class="font-medium text-gray-800 dark:text-white">
-                                    @{{ item.formatted_price }}
-                                </p>
+                           <div class="flex justify-between">
+                            <p class="font-medium text-gray-800 dark:text-white">
+                                @{{ item.proposal_count }} proposals
+                            </p>
 
-                                <p class="font-normal text-gray-800 dark:text-white">
-                                    @{{ item.formatted_revenue }}
-                                </p>
-                            </div>
+                            <p class="font-normal text-gray-800 dark:text-white">
+                                @{{ item.guest_count }} guests
+                            </p>
+                        </div>
                         </div>
                     </a>
                 </div>
