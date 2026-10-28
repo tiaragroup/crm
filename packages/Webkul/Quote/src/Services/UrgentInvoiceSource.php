@@ -21,8 +21,7 @@ class UrgentInvoiceSource
         }
 
         $items = $quote->items()->orderBy('id')->when($lock, fn ($query) => $query->lockForUpdate())->get()
-            ->filter(fn ($item) =>
-                ! $item->is_included
+            ->filter(fn ($item) => ! $item->is_included
                 && $item->pricing_type !== 'included'
             )
             ->map(fn ($item) => [
@@ -60,7 +59,7 @@ class UrgentInvoiceSource
                     ?: $quote->person?->organization?->name,
                 'contact_name' => $quote->attention_name
                     ?: $quote->person?->name,
-                'email' => $quote->client_email,
+                'email'  => $quote->client_email,
                 'mobile' => $quote->client_mobile,
             ],
 

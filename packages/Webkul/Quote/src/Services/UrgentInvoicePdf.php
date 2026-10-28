@@ -3,8 +3,8 @@
 namespace Webkul\Quote\Services;
 
 use Mpdf\Mpdf;
-use Mpdf\QrCode\QrCode;
 use Mpdf\QrCode\Output\Png;
+use Mpdf\QrCode\QrCode;
 use Webkul\Quote\Models\UrgentTaxInvoice;
 
 class UrgentInvoicePdf
@@ -19,8 +19,8 @@ class UrgentInvoicePdf
             throw new \RuntimeException('Cannot create private invoice render directory.');
         }
         $pdf = new Mpdf(['mode' => 'utf-8', 'format' => 'A4', 'tempDir' => $temp,
-            'default_font' => 'dejavusans', 'margin_left' => 12, 'margin_right' => 12,
-            'margin_top' => 12, 'margin_bottom' => 18, 'autoScriptToLang' => true, 'autoLangToFont' => true]);
+            'default_font'      => 'dejavusans', 'margin_left' => 12, 'margin_right' => 12,
+            'margin_top'        => 12, 'margin_bottom' => 18, 'autoScriptToLang' => true, 'autoLangToFont' => true]);
         $qr = (new Png)->output(new QrCode($invoice->qr_payload), 600, [255, 255, 255], [0, 0, 0]);
         $logoPath = public_path('images/tiara-logo.png');
         $logo = is_file($logoPath);

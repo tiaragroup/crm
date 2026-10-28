@@ -38,8 +38,10 @@ class UrgentTaxInvoice extends Model
                 if (! array_is_list($value)) {
                     ksort($value);
                 }
+
                 return array_map($canonicalize, $value);
             }
+
             return $value;
         };
 
@@ -47,17 +49,17 @@ class UrgentTaxInvoice extends Model
     }
 
     protected $casts = [
-        'sequence_number' => 'integer',
-        'source_quote_id' => 'integer',
+        'sequence_number'       => 'integer',
+        'source_quote_id'       => 'integer',
         'source_quote_revision' => 'integer',
-        'source_owner_user_id' => 'integer',
-        'snapshot_version' => 'integer',
-        'issued_at'      => 'datetime',
-        'archived_at'    => 'datetime',
-        'seller_snapshot' => 'array',
-        'buyer_snapshot'  => 'array',
-        'items_snapshot'  => 'array',
-        'totals_snapshot' => 'array',
+        'source_owner_user_id'  => 'integer',
+        'snapshot_version'      => 'integer',
+        'issued_at'             => 'datetime',
+        'archived_at'           => 'datetime',
+        'seller_snapshot'       => 'array',
+        'buyer_snapshot'        => 'array',
+        'items_snapshot'        => 'array',
+        'totals_snapshot'       => 'array',
     ];
 
     public function quote()

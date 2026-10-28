@@ -30,10 +30,10 @@ return [
 
     'disks' => [
         'urgent_invoices' => [
-            'driver' => 'local',
-            'root' => storage_path('app/private/urgent-invoices'),
+            'driver'     => 'local',
+            'root'       => storage_path('app/private/urgent-invoices'),
             'visibility' => 'private',
-            'throw' => true,
+            'throw'      => true,
         ],
 
         'local' => [

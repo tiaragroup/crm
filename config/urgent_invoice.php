@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'enabled' => (bool) env('TIARA_URGENT_INVOICE_ENABLED', false),
+    'enabled'         => (bool) env('TIARA_URGENT_INVOICE_ENABLED', false),
     'preview_enabled' => (bool) env('TIARA_INVOICE_PREVIEW_ENABLED', false),
     // Enable only after the company confirms that Phase 1 is appropriate and reviews the output.
     'phase_one_reviewed' => (bool) env('TIARA_INVOICE_PHASE_ONE_REVIEWED', false),

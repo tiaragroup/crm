@@ -59,20 +59,20 @@ class UrgentInvoiceIssuer
             $issuedAt = now('UTC')->startOfSecond();
             $invoice = new UrgentTaxInvoice;
             $invoice->forceFill([
-                'uuid' => (string) Str::uuid(), 'series' => 'TI', 'sequence_number' => $number,
-                'invoice_number' => 'TI-'.str_pad((string) $number, 10, '0', STR_PAD_LEFT),
-                'source_quote_id' => $id, 'quote_id' => $id,
+                'uuid'                   => (string) Str::uuid(), 'series' => 'TI', 'sequence_number' => $number,
+                'invoice_number'         => 'TI-'.str_pad((string) $number, 10, '0', STR_PAD_LEFT),
+                'source_quote_id'        => $id, 'quote_id' => $id,
                 'source_quote_reference' => $preview['source']['reference'],
-                'source_quote_revision' => $preview['source']['revision'],
-                'source_owner_user_id' => $quote->user_id,
-                'invoice_type' => $buyer['invoice_type'], 'issued_at' => $issuedAt,
-                'currency_code' => 'SAR', 'snapshot_version' => 1,
-                'seller_snapshot' => $seller, 'buyer_snapshot' => $buyer,
-                'items_snapshot' => $items, 'totals_snapshot' => $totals,
-                'qr_payload' => $this->qr->encode($seller['legal_name_ar'], $seller['vat_number'], $issuedAt->format('Y-m-d\TH:i:s\Z'), $totals['grand_total'], $totals['vat_amount']),
-                'archive_status' => 'pending',
-                'issued_by_user_id' => auth()->guard('user')->id(),
-                'issued_by_name' => auth()->guard('user')->user()->name,
+                'source_quote_revision'  => $preview['source']['revision'],
+                'source_owner_user_id'   => $quote->user_id,
+                'invoice_type'           => $buyer['invoice_type'], 'issued_at' => $issuedAt,
+                'currency_code'          => 'SAR', 'snapshot_version' => 1,
+                'seller_snapshot'        => $seller, 'buyer_snapshot' => $buyer,
+                'items_snapshot'         => $items, 'totals_snapshot' => $totals,
+                'qr_payload'             => $this->qr->encode($seller['legal_name_ar'], $seller['vat_number'], $issuedAt->format('Y-m-d\TH:i:s\Z'), $totals['grand_total'], $totals['vat_amount']),
+                'archive_status'         => 'pending',
+                'issued_by_user_id'      => auth()->guard('user')->id(),
+                'issued_by_name'         => auth()->guard('user')->user()->name,
             ]);
             $invoice->content_sha256 = $invoice->contentHash();
             $invoice->save();

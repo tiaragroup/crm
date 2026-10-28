@@ -4,6 +4,7 @@ namespace Webkul\Admin\Http\Controllers\Quote;
 
 use DomainException;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Webkul\Admin\Http\Controllers\Controller;
 use Webkul\Quote\Models\UrgentTaxInvoice;
 use Webkul\Quote\Services\UrgentInvoiceAccess;
@@ -17,7 +18,10 @@ class UrgentInvoicePreviewController extends Controller
 {
     public function __construct(private UrgentInvoiceAccess $access, private UrgentInvoiceSource $source, private UrgentInvoiceTotalsValidator $validator, private UrgentInvoiceDetails $details) {}
 
-    public function show(int $id) { return $this->page($id); }
+    public function show(int $id)
+    {
+        return $this->page($id);
+    }
 
     public function review(Request $request, int $id)
     {
@@ -32,6 +36,7 @@ class UrgentInvoicePreviewController extends Controller
             return back()->withErrors(['pricing' => $e->getMessage()])->withInput();
         }
         $request->session()->put('urgent_invoice_review.'.$id, ['buyer' => $buyer, 'fingerprint' => $this->details->fingerprint($preview), 'expires_at' => now()->addMinutes(30)->timestamp]);
+
         return $this->page($id, $buyer);
     }
 
@@ -42,12 +47,19 @@ class UrgentInvoicePreviewController extends Controller
         $preview = $this->source->preview($id, true);
         $totals = null;
         $pricingError = null;
-        try { $totals = $this->validator->validate($preview); }
-        catch (DomainException $e) { $pricingError = $e->getMessage(); }
+        try {
+            $totals = $this->validator->validate($preview);
+        } catch (DomainException $e) {
+            $pricingError = $e->getMessage();
+        }
         $existingInvoice = UrgentTaxInvoice::where('source_quote_id', $id)->first();
         $sellerErrors = [];
-        try { $this->details->seller(); }
-        catch (\Illuminate\Validation\ValidationException $e) { $sellerErrors = $e->validator->errors()->all(); }
+        try {
+            $this->details->seller();
+        } catch (ValidationException $e) {
+            $sellerErrors = $e->validator->errors()->all();
+        }
+
         return view('admin::quotes.urgent-invoice-review', compact('quote', 'preview', 'totals', 'pricingError', 'reviewedBuyer', 'sellerErrors', 'existingInvoice'));
     }
 
@@ -58,9 +70,13 @@ class UrgentInvoicePreviewController extends Controller
         $review = $request->session()->get('urgent_invoice_review.'.$id);
         $existing = UrgentTaxInvoice::where('source_quote_id', $id)->first();
         abort_unless($existing || ($review && $review['expires_at'] >= now()->timestamp), 422, 'Review expired. Review the invoice again.');
-        try { $invoice = $issuer->issue($id, $review['buyer'] ?? [], $review['fingerprint'] ?? ''); }
-        catch (DomainException $e) { return back()->withErrors(['invoice' => $e->getMessage()]); }
+        try {
+            $invoice = $issuer->issue($id, $review['buyer'] ?? [], $review['fingerprint'] ?? '');
+        } catch (DomainException $e) {
+            return back()->withErrors(['invoice' => $e->getMessage()]);
+        }
         $request->session()->forget('urgent_invoice_review.'.$id);
+
         return redirect()->route('admin.quotes.urgent_invoice.download', $invoice->uuid);
     }
 
@@ -69,8 +85,12 @@ class UrgentInvoicePreviewController extends Controller
         $this->access->permission('quotes.print');
         $invoice = UrgentTaxInvoice::where('uuid', $uuid)->firstOrFail();
         $this->access->invoice($invoice);
-        try { $bytes = $archive->bytes($invoice); }
-        catch (DomainException $e) { abort(409, $e->getMessage()); }
+        try {
+            $bytes = $archive->bytes($invoice);
+        } catch (DomainException $e) {
+            abort(409, $e->getMessage());
+        }
+
         return response($bytes, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'attachment; filename="'.$invoice->invoice_number.'.pdf"', 'Cache-Control' => 'private, no-store', 'X-Content-Type-Options' => 'nosniff']);
     }
 }

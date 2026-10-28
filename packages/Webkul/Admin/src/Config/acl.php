@@ -576,9 +576,9 @@ return [
     ],
 
     [
-        'key' => 'quotes.issue_invoice',
-        'name' => 'admin::urgent-invoice.issue',
+        'key'   => 'quotes.issue_invoice',
+        'name'  => 'admin::urgent-invoice.issue',
         'route' => 'admin.quotes.urgent_invoice.issue',
-        'sort' => 6,
+        'sort'  => 6,
     ],
 ];
