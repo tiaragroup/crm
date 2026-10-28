@@ -7,6 +7,7 @@ use Webkul\Attribute\Traits\CustomAttribute;
 use Webkul\Contact\Models\PersonProxy;
 use Webkul\Lead\Models\LeadProxy;
 use Webkul\Quote\Contracts\Quote as QuoteContract;
+use Webkul\Tax\Models\TaxDocumentProxy;
 use Webkul\User\Models\UserProxy;
 
 class Quote extends Model implements QuoteContract
@@ -125,6 +126,6 @@ class Quote extends Model implements QuoteContract
     /** Tax documents are independent records; proposals never write through this relation. */
     public function taxDocuments()
     {
-        return $this->hasMany(\Webkul\Tax\Models\TaxDocumentProxy::modelClass(), 'quote_id');
+        return $this->hasMany(TaxDocumentProxy::modelClass(), 'quote_id');
     }
 }

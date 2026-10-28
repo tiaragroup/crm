@@ -336,11 +336,11 @@ return [
                 'mega-search' => [
                     'title' => 'Tìm kiếm Mega',
                     'tabs'  => [
-                        'leads'    => 'Khách hàng tiềm năng',
-                        'quotes'   => 'Báo giá',
-                        'persons'  => 'Người',
-                        'products' => 'Sản phẩm',
-                        'settings' => 'Cài đặt',
+                        'leads'          => 'Khách hàng tiềm năng',
+                        'quotes'         => 'Báo giá',
+                        'persons'        => 'Người',
+                        'products'       => 'Sản phẩm',
+                        'settings'       => 'Cài đặt',
                         'configurations' => 'Cấu hình',
                     ],
                     'explore-all-products'          => 'Khám phá tất cả Sản phẩm',

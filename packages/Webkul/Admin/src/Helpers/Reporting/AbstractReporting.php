@@ -323,7 +323,7 @@ abstract class AbstractReporting
     public function getDaysInterval($startDate, $endDate)
     {
         $intervals = [];
- 
+
         $totalDays = $startDate->diffInDays($endDate) + 1;
 
         for ($i = 0; $i < $totalDays; $i++) {

@@ -336,11 +336,11 @@ return [
                 'mega-search' => [
                     'title' => 'Mega Arama',
                     'tabs'  => [
-                        'leads'    => 'Müşteriler',
-                        'quotes'   => 'Teklifler',
-                        'persons'  => 'Kişiler',
-                        'products' => 'Ürünler',
-                        'settings' => 'Ayarlar',
+                        'leads'          => 'Müşteriler',
+                        'quotes'         => 'Teklifler',
+                        'persons'        => 'Kişiler',
+                        'products'       => 'Ürünler',
+                        'settings'       => 'Ayarlar',
                         'configurations' => 'Yapılandırmalar',
                     ],
                     'explore-all-products'          => 'Tüm Ürünleri Keşfet',

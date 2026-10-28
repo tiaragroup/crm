@@ -476,11 +476,11 @@ return [
                 'mega-search' => [
                     'title' => 'البحث الشامل',
                     'tabs'  => [
-                        'leads'    => 'العملاء المحتملين',
-                        'quotes'   => 'عروض الأسعار',
-                        'persons'  => 'الأشخاص',
-                        'products' => 'المنتجات',
-                        'settings' => 'الإعدادات',
+                        'leads'          => 'العملاء المحتملين',
+                        'quotes'         => 'عروض الأسعار',
+                        'persons'        => 'الأشخاص',
+                        'products'       => 'المنتجات',
+                        'settings'       => 'الإعدادات',
                         'configurations' => 'إعدادات النظام',
                     ],
                     'explore-all-products'          => 'استكشاف جميع المنتجات',

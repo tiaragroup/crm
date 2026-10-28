@@ -336,11 +336,11 @@ return [
                 'mega-search' => [
                     'title' => 'Busca rápida',
                     'tabs'  => [
-                        'leads'    => 'Oportunidades',
-                        'quotes'   => 'Cotações',
-                        'persons'  => 'Pessoas',
-                        'products' => 'Produtos',
-                        'settings' => 'Configurações',
+                        'leads'          => 'Oportunidades',
+                        'quotes'         => 'Cotações',
+                        'persons'        => 'Pessoas',
+                        'products'       => 'Produtos',
+                        'settings'       => 'Configurações',
                         'configurations' => 'Configurações do Sistema',
                     ],
                     'explore-all-products'          => 'Explorar todos os Produtos',

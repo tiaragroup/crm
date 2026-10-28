@@ -231,9 +231,9 @@ class Core
             $code = strtoupper((string) config('app.currency'));
             $digits = match ($code) {
                 'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG', 'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF' => 0,
-                'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND' => 3,
-                'CLF', 'UYW' => 4,
-                default => 2,
+                'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND'                                                                       => 3,
+                'CLF', 'UYW'                                                                                                          => 4,
+                default                                                                                                               => 2,
             };
 
             // Display only: financial calculations must retain decimal arithmetic.
