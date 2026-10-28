@@ -121,4 +121,10 @@ class Quote extends Model implements QuoteContract
     {
         return $this->belongsToMany(LeadProxy::modelClass(), 'lead_quotes');
     }
+
+    /** Tax documents are independent records; proposals never write through this relation. */
+    public function taxDocuments()
+    {
+        return $this->hasMany(\Webkul\Tax\Models\TaxDocumentProxy::modelClass(), 'quote_id');
+    }
 }

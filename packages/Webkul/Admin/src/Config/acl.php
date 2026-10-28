@@ -2,6 +2,22 @@
 
 return [
     [
+        'key' => 'tax_documents', 'name' => 'admin::tax.documents',
+        'route' => 'admin.tax_documents.index', 'sort' => 3.6,
+    ], [
+        'key' => 'tax_documents.create', 'name' => 'admin::tax.create-draft',
+        'route' => ['admin.tax_documents.create', 'admin.tax_documents.store'], 'sort' => 1,
+    ], [
+        'key' => 'tax_documents.edit', 'name' => 'admin::tax.edit-draft',
+        'route' => ['admin.tax_documents.edit', 'admin.tax_documents.update'], 'sort' => 2,
+    ], [
+        'key' => 'tax_settings', 'name' => 'admin::tax.sellers',
+        'route' => 'admin.tax_sellers.index', 'sort' => 3.7,
+    ], [
+        'key' => 'tax_settings.manage', 'name' => 'admin::tax.manage-sellers',
+        'route' => ['admin.tax_sellers.create', 'admin.tax_sellers.store', 'admin.tax_sellers.edit', 'admin.tax_sellers.update'], 'sort' => 1,
+    ],
+    [
         'key'   => 'dashboard',
         'name'  => 'admin::app.layouts.dashboard',
         'route' => 'admin.dashboard.index',

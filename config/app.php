@@ -240,6 +240,7 @@ return [
         LeadServiceProvider::class,
         ProductServiceProvider::class,
         QuoteServiceProvider::class,
+        Webkul\Tax\Providers\TaxServiceProvider::class,
         TagServiceProvider::class,
         UserServiceProvider::class,
         WarehouseServiceProvider::class,

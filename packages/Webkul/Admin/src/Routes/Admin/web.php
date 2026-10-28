@@ -39,6 +39,7 @@ require 'activities-routes.php';
  * Quotes routes.
  */
 require 'quote-routes.php';
+require 'tax-routes.php';
 
 /**
  * Configuration routes.

@@ -1,0 +1,8 @@
+{
+    "name": "tiara/laravel-tax",
+    "description": "Tiara Phase 1 tax document foundations",
+    "type": "library",
+    "license": "proprietary",
+    "require": {"php": "^8.2", "brick/math": "^0.12"},
+    "autoload": {"psr-4": {"Webkul\\Tax\\": "src/"}}
+}

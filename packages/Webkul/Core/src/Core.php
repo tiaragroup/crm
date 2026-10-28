@@ -203,6 +203,12 @@ class Core
      */
     public function currencySymbol($code)
     {
+        // Intl is optional in some local PHP installations. An ISO code remains
+        // unambiguous and keeps the shared admin layout usable without ICU.
+        if (! class_exists(\NumberFormatter::class)) {
+            return strtoupper((string) $code);
+        }
+
         $formatter = new \NumberFormatter(app()->getLocale().'@currency='.$code, \NumberFormatter::CURRENCY);
 
         return $formatter->getSymbol(\NumberFormatter::CURRENCY_SYMBOL);
@@ -219,6 +225,19 @@ class Core
     {
         if (is_null($price)) {
             $price = 0;
+        }
+
+        if (! class_exists(\NumberFormatter::class)) {
+            $code = strtoupper((string) config('app.currency'));
+            $digits = match ($code) {
+                'BIF', 'CLP', 'DJF', 'GNF', 'ISK', 'JPY', 'KMF', 'KRW', 'PYG', 'RWF', 'UGX', 'UYI', 'VND', 'VUV', 'XAF', 'XOF', 'XPF' => 0,
+                'BHD', 'IQD', 'JOD', 'KWD', 'LYD', 'OMR', 'TND' => 3,
+                'CLF', 'UYW' => 4,
+                default => 2,
+            };
+
+            // Display only: financial calculations must retain decimal arithmetic.
+            return number_format((float) $price, $digits, '.', ',').' '.$code;
         }
 
         $formatter = new \NumberFormatter(app()->getLocale(), \NumberFormatter::CURRENCY);

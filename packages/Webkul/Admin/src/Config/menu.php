@@ -1,6 +1,14 @@
 <?php
 
 return [
+    [
+        'key' => 'tax_documents', 'name' => 'admin::tax.documents',
+        'route' => 'admin.tax_documents.index', 'sort' => 3.6, 'icon-class' => 'icon-quote',
+    ],
+    [
+        'key' => 'tax_settings', 'name' => 'admin::tax.sellers',
+        'route' => 'admin.tax_sellers.index', 'sort' => 3.7, 'icon-class' => 'icon-setting',
+    ],
     /**
      * Dashboard.
      */
