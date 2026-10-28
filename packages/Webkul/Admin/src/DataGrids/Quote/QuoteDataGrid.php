@@ -95,8 +95,8 @@ class QuoteDataGrid extends DataGrid
             'type'       => 'date',
             'sortable'   => true,
             'filterable' => true,
-            'closure' => fn ($row) => $row->event_at
-            ? \Carbon\Carbon::parse($row->event_at)
+            'closure'    => fn ($row) => $row->event_at
+            ? Carbon::parse($row->event_at)
                 ->locale(app()->getLocale())
                 ->translatedFormat(app()->getLocale() === 'ar' ? 'd F Y' : 'd M Y')
             : '—',

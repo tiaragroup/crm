@@ -106,8 +106,8 @@ return [
     'uploaded'    => 'فشل رفع :attribute.',
     'url'         => 'تنسيق :attribute غير صالح.',
     'uuid'        => 'يجب أن يكون :attribute معرّف UUID صالحاً.',
-    'custom' => [],
-    'attributes' => [
+    'custom'      => [],
+    'attributes'  => [
         'name'                  => 'الاسم',
         'email'                 => 'البريد الإلكتروني',
         'password'              => 'كلمة المرور',
