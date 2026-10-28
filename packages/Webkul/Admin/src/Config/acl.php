@@ -79,7 +79,7 @@ return [
     ], [
         'key'   => 'quotes.print',
         'name'  => 'admin::app.acl.print',
-        'route' => ['admin.quotes.print', 'admin.quotes.word'],
+        'route' => ['admin.quotes.print', 'admin.quotes.word', 'admin.quotes.urgent_invoice.preview', 'admin.quotes.urgent_invoice.review', 'admin.quotes.urgent_invoice.download'],
         'sort'  => 3,
     ], [
         'key'   => 'quotes.delete',
@@ -573,5 +573,12 @@ return [
         'name'  => 'admin::app.acl.configuration',
         'route' => 'admin.configuration.index',
         'sort'  => 9,
+    ],
+
+    [
+        'key' => 'quotes.issue_invoice',
+        'name' => 'admin::urgent-invoice.issue',
+        'route' => 'admin.quotes.urgent_invoice.issue',
+        'sort' => 6,
     ],
 ];

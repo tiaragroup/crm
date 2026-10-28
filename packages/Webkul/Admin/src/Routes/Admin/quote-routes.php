@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use Webkul\Admin\Http\Controllers\Quote\QuoteController;
+use Webkul\Admin\Http\Controllers\Quote\UrgentInvoicePreviewController;
 
 Route::controller(QuoteController::class)->prefix('quotes')->group(function () {
     Route::get('', 'index')->name('admin.quotes.index');
@@ -25,4 +26,21 @@ Route::controller(QuoteController::class)->prefix('quotes')->group(function () {
     Route::get('contacts/search', 'searchContacts')->name('admin.quotes.contacts.search');
 
     Route::post('mass-destroy', 'massDestroy')->name('admin.quotes.mass_delete');
+
+    Route::get('urgent-invoice/{id}', [
+    UrgentInvoicePreviewController::class,
+    'show',
+])->name('admin.quotes.urgent_invoice.preview');
+
+Route::post('urgent-invoice/{id}/review', [
+    UrgentInvoicePreviewController::class,
+    'review',
+])->name('admin.quotes.urgent_invoice.review');
+
+Route::post('urgent-invoice/{id}/issue', [UrgentInvoicePreviewController::class, 'issue'])
+    ->middleware('throttle:10,1')->name('admin.quotes.urgent_invoice.issue');
+
+Route::get('urgent-invoices/{uuid}/download', [UrgentInvoicePreviewController::class, 'download'])
+    ->whereUuid('uuid')->name('admin.quotes.urgent_invoice.download');
+ 
 });

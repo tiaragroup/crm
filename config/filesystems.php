@@ -29,6 +29,12 @@ return [
     */
 
     'disks' => [
+        'urgent_invoices' => [
+            'driver' => 'local',
+            'root' => storage_path('app/private/urgent-invoices'),
+            'visibility' => 'private',
+            'throw' => true,
+        ],
 
         'local' => [
             'driver' => 'local',

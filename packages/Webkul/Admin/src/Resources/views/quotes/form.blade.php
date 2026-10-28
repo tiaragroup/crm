@@ -42,6 +42,18 @@
         </div>
         <div class="flex gap-2">
             @if ($isEdit)
+            @if (
+                    $isEdit
+                    && config('urgent_invoice.preview_enabled')
+                    && bouncer()->hasPermission('quotes.print')
+                )
+                    <a
+                        href="{{ route('admin.quotes.urgent_invoice.preview', $quote->id) }}"
+                        class="secondary-button"
+                    >
+                        Preview Tax Invoice / معاينة الفاتورة الضريبية
+                    </a>
+                @endif
                 <a href="{{ route('admin.quotes.word', $quote->id) }}" class="secondary-button">@lang('admin::app.quotes.form.download-word')</a>
                 <x-admin::modal ref="pdfLanguageModal" size="normal">
                     <x-slot:toggle>
